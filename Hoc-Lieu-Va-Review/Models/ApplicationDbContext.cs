@@ -9,7 +9,6 @@ namespace Hoc_Lieu_Va_Review.Models
         {
         }
 
-        // Khai báo các bảng (DbSet) của bạn ở đây, ví dụ:
-        // public DbSet<Product> Products { get; set; }
+        // public DbSet<Sach> Saches { get; set; }
     }
 }
