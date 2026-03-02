@@ -45,6 +45,46 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 .ToListAsync();
 
             return View(danhSachHocPhan);
+
+        }
+        // [GET] Hiển thị form Thêm mới Học Phần
+        [HttpGet]
+        public IActionResult Create()
+        {
+            // Tạo Dropdown List chọn Khoa
+            ViewData["KhoaList"] = new SelectList(_context.Khoas, "KhoaID", "TenKhoa");
+            return View();
+        }
+
+        // Hàm này trả về dữ liệu JSON cho AJAX gọi ngầm
+        [HttpGet]
+        public async Task<JsonResult> GetNganhByKhoa(int khoaId)
+        {
+            var nganhs = await _context.Nganhs
+            .Where(n => n.KhoaID == khoaId)
+            .Select(n => new { value = n.NganhID, text = n.TenNganh })
+            .ToListAsync();
+            return Json(nganhs);
+        }
+
+        // [POST] Lưu Học Phần mới vào Database
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("TenHocPhan,MoTa,NganhID")] HocPhan hocPhan)
+        {
+            // Bỏ qua lỗi validate object Nganh
+            ModelState.Remove("Nganh");
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(hocPhan);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Nếu lỗi, load lại dropdown
+            ViewData["NganhID"] = new SelectList(_context.Nganhs, "NganhID", "TenNganh", hocPhan.NganhID);
+            return View(hocPhan);
         }
     }
 }
