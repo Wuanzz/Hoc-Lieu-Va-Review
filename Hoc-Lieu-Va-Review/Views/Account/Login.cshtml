@@ -1,0 +1,70 @@
+﻿
+@model Hoc_Lieu_Va_Review.ViewModels.LoginViewModel
+
+@{
+    // Dòng này cực quan trọng: Bảo MVC đừng dùng cái khung (layout) mặc định nữa
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Hệ thống Quản lý học liệu</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        /* Thêm chút CSS để form nằm chính giữa màn hình */
+        body {
+            background-color: #f4f7f6;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-sm border-0 rounded-lg">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <h4 class="mb-0">Đăng nhập</h4>
+                        <small>Hệ thống Quản lý học liệu & Review</small>
+                    </div>
+                    <div class="card-body p-4">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                            </div>
+                        }
+
+                        <form asp-action="Login" method="post">
+                            <div class="form-group mb-3">
+                                <label asp-for="Email" class="form-label fw-bold">Email tài khoản</label>
+                                <input asp-for="Email" class="form-control form-control-lg" placeholder="Nhập email..." />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label asp-for="MatKhau" class="form-label fw-bold">Mật khẩu</label>
+                                <input asp-for="MatKhau" class="form-control form-control-lg" placeholder="Nhập mật khẩu..." />
+                                <span asp-validation-for="MatKhau" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Đăng nhập ngay</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

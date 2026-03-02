@@ -18,7 +18,7 @@ namespace Hoc_Lieu_Va_Review.Models
         [Column(TypeName = "varchar(255)")]
         public string MatKhau { get; set; }
         [Column(TypeName = "varchar(500)")]
-        public string AnhDaiDien { get; set; }
+        public string? AnhDaiDien { get; set; }
         public DateTime NgayDangKy { get; set; } = DateTime.Now;
         [Column(TypeName = "varchar(50)")]
         public string TrangThai { get; set; } // Ví dụ: "HoatDong", "BiKhoa"
