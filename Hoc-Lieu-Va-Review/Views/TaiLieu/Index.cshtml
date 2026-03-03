@@ -1,0 +1,70 @@
+﻿
+@model IEnumerable<Hoc_Lieu_Va_Review.Models.TaiLieu>
+
+@{
+    ViewData["Title"] = "Quản lý Tài Liệu";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Kho Tài Liệu</h2>
+
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Upload Tài Liệu</a>
+    </p>
+
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Tên Tài Liệu</th>
+                <th>Môn Học</th>
+                <th>Loại</th>
+                <th>Người Up</th>
+                <th>Dung lượng</th>
+                <th>Trạng thái</th>
+                <th class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@item.TenTaiLieu</td>
+                        <td class="text-success">@item.HocPhan?.TenHocPhan</td>
+                        <td><span class="badge bg-secondary">@item.LoaiTaiLieu</span></td>
+                        <td>@item.NguoiDung?.HoTen</td>
+                        <td>@item.KichThuoc MB</td>
+                        <td>
+                            @if (item.TrangThaiDuyet == "ChoDuyet")
+                            {
+                                <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                            }
+                            else if (item.TrangThaiDuyet == "HopLe")
+                            {
+
+                                <span class="badge bg-success">Hợp lệ</span>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-danger">Từ chối</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-success" asp-action="Download" asp-route-id="@item.TaiLieuID">
+                                Tải về (@item.LuotTai)
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">Chưa có tài liệu nào được upload.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

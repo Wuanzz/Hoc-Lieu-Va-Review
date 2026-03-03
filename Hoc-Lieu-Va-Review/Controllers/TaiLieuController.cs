@@ -1,0 +1,133 @@
+﻿using Hoc_Lieu_Va_Review.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims; // Cần cái này để lấy ID người dùng đăng nhập
+
+namespace Hoc_Lieu_Va_Review.Controllers
+{
+    [Authorize]
+    public class TaiLieuController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment; // Dùng để truy cập thư mục wwwroot
+
+        public TaiLieuController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        {
+            _context = context;
+            _webHostEnvironment = webHostEnvironment;
+        }
+
+        // Hiển thị danh sách Tài Liệu
+        public async Task<IActionResult> Index()
+        {
+            var danhSachTaiLieu = await _context.TaiLieus
+                .Include(t => t.HocPhan)
+                .Include(t => t.NguoiDung)
+                .ToListAsync();
+            return View(danhSachTaiLieu);
+        }
+
+        // [GET] Hiển thị form Upload File
+        [HttpGet]
+        public IActionResult Create()
+        {
+            ViewData["HocPhanID"] = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan");
+            return View();
+        }
+
+        // [POST] Xử lý việc lưu File lên server và lưu thông tin vào DB
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("TenTaiLieu,LoaiTaiLieu,HocPhanID")] TaiLieu taiLieu, IFormFile fileUpload)
+        {
+            // Bỏ qua validate các trường sẽ được code tự động gán giá trị
+            ModelState.Remove("DuongDanFile");
+            ModelState.Remove("NguoiDung");
+            ModelState.Remove("HocPhan");
+            ModelState.Remove("TrangThaiDuyet");
+
+            if (ModelState.IsValid)
+            {
+                // Kiểm tra xem người dùng có thực sự chọn file chưa
+                if (fileUpload != null && fileUpload.Length > 0)
+                {
+                    // Tạo thư mục "uploads" trong wwwroot nếu chưa tồn tại
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    // Đổi tên file để tránh việc upload 2 file trùng tên bị ghi đè (dùng Guid)
+                    string fileExtension = Path.GetExtension(fileUpload.FileName);
+                    string uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    // Copy file vật lý vào thư mục uploads
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await fileUpload.CopyToAsync(fileStream);
+                    }
+
+                    // Cập nhật nốt các thông tin còn thiếu vào Model trước khi lưu DB
+                    taiLieu.DuongDanFile = "/uploads/" + uniqueFileName;
+                    taiLieu.KichThuoc = Math.Round((double)fileUpload.Length / (1024 * 1024), 2); // Đổi byte sang MB
+
+                    // Lấy ID của người đang đăng nhập (từ Claims lúc Login)
+                    var userIdClaim = User.FindFirst("UserId");
+                    if (userIdClaim != null)
+                    {
+                        taiLieu.NguoiDungID = int.Parse(userIdClaim.Value);
+                    }
+
+                    taiLieu.NgayUpload = DateTime.Now;
+                    taiLieu.TrangThaiDuyet = "ChoDuyet"; // Sinh viên up lên thì cứ cho vào trạng thái chờ Admin duyệt
+                    taiLieu.LuotTai = 0;
+
+                    // Lưu vào Database
+                    _context.Add(taiLieu);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError("DuongDanFile", "Vui lòng chọn một file để upload.");
+                }
+            }
+
+            ViewData["HocPhanID"] = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan", taiLieu.HocPhanID);
+            return View(taiLieu);
+        }
+
+        // Hàm xử lý việc tải file và đếm lượt tải
+        [HttpGet]
+        public async Task<IActionResult> Download(int id)
+        {
+            var taiLieu = await _context.TaiLieus.FindAsync(id);
+            if (taiLieu == null) return NotFound("Không tìm thấy thông tin tài liệu trong Database.");
+
+            // CÁCH MỚI: Tách lấy đúng cái tên file ở đuôi, rồi tự ghép nối lại cực kỳ an toàn
+            string fileName = Path.GetFileName(taiLieu.DuongDanFile);
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            string filePath = Path.Combine(uploadsFolder, fileName);
+
+            // Tớ thêm cái filePath vào thông báo lỗi để nếu có sai, cậu sẽ nhìn thấy ngay nó đang tìm ở đâu
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound($"File vật lý không tồn tại. Máy chủ đang tìm tại: {filePath}");
+            }
+
+            taiLieu.LuotTai += 1;
+            _context.Update(taiLieu);
+            await _context.SaveChangesAsync();
+
+            byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            string extension = Path.GetExtension(filePath);
+            string downloadName = taiLieu.TenTaiLieu + extension;
+
+            return File(fileBytes, "application/octet-stream", downloadName);
+        }
+    }
+}
