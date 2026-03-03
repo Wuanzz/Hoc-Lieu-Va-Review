@@ -142,5 +142,35 @@ namespace Hoc_Lieu_Va_Review.Controllers
         {
             return _context.HocPhans.Any(e => e.HocPhanID == id);
         }
+
+        // CHỨC NĂNG XÓA (DELETE)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            // Kỹ thuật mới: Dùng ThenInclude để đi sâu từ Học Phần -> Ngành -> Khoa
+            var hocPhan = await _context.HocPhans
+                .Include(h => h.Nganh)
+                    .ThenInclude(n => n.Khoa)
+                .FirstOrDefaultAsync(m => m.HocPhanID == id);
+
+            if (hocPhan == null) return NotFound();
+
+            return View(hocPhan);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var hocPhan = await _context.HocPhans.FindAsync(id);
+            if (hocPhan != null)
+            {
+                _context.HocPhans.Remove(hocPhan);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
