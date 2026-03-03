@@ -86,5 +86,61 @@ namespace Hoc_Lieu_Va_Review.Controllers
             ViewData["NganhID"] = new SelectList(_context.Nganhs, "NganhID", "TenNganh", hocPhan.NganhID);
             return View(hocPhan);
         }
+        // CHỨC NĂNG SỬA (EDIT)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            // Phải Include Nganh để lấy được KhoaID
+            var hocPhan = await _context.HocPhans.Include(h => h.Nganh).FirstOrDefaultAsync(h => h.HocPhanID == id);
+            if (hocPhan == null) return NotFound();
+
+            // Lấy ID của Khoa đang chứa Ngành của môn học này
+            int currentKhoaId = hocPhan.Nganh.KhoaID;
+
+            // Truyền danh sách Khoa (chọn sẵn Khoa hiện tại)
+            ViewData["KhoaList"] = new SelectList(_context.Khoas, "KhoaID", "TenKhoa", currentKhoaId);
+            // Truyền danh sách Ngành thuộc Khoa đó (chọn sẵn Ngành hiện tại)
+            ViewData["NganhList"] = new SelectList(_context.Nganhs.Where(n => n.KhoaID == currentKhoaId), "NganhID", "TenNganh", hocPhan.NganhID);
+
+            return View(hocPhan);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("HocPhanID,TenHocPhan,MoTa,NganhID")] HocPhan hocPhan)
+        {
+            if (id != hocPhan.HocPhanID) return NotFound();
+
+            ModelState.Remove("Nganh");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(hocPhan);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!HocPhanExists(hocPhan.HocPhanID)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Nếu lỗi, xử lý lại Dropdown (cơ bản)
+            var nganh = await _context.Nganhs.FindAsync(hocPhan.NganhID);
+            int currentKhoaId = nganh?.KhoaID ?? 0;
+            ViewData["KhoaList"] = new SelectList(_context.Khoas, "KhoaID", "TenKhoa", currentKhoaId);
+            ViewData["NganhList"] = new SelectList(_context.Nganhs.Where(n => n.KhoaID == currentKhoaId), "NganhID", "TenNganh", hocPhan.NganhID);
+            return View(hocPhan);
+        }
+
+        private bool HocPhanExists(int id)
+        {
+            return _context.HocPhans.Any(e => e.HocPhanID == id);
+        }
     }
 }
