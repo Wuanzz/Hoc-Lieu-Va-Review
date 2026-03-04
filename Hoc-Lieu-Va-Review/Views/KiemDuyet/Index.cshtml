@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "Bảng điều khiển Giảng viên";
+    // Lấy dữ liệu từ ViewBag ép kiểu về List
+    var danhSachTaiLieu = ViewBag.TaiLieuChoDuyet as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🛡️ Không gian Kiểm duyệt Nội dung</h2>
+        <span class="badge bg-danger fs-6">Chờ xử lý: @(danhSachTaiLieu?.Count ?? 0) mục</span>
+    </div>
+
+    <div class="card shadow-sm border-0 border-top border-primary border-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-primary fw-bold">1. Tài Liệu Cần Phê Duyệt</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tên Tài liệu</th>
+                        <th>Môn Học</th>
+                        <th>Người đăng</th>
+                        <th>Thời gian</th>
+                        <th class="text-center">Quyết định</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (danhSachTaiLieu != null && danhSachTaiLieu.Any())
+                    {
+                        foreach (var item in danhSachTaiLieu)
+                        {
+                            <tr>
+                                <td class="fw-bold">
+                                    @item.TenTaiLieu
+                                    <br />
+                                    <a href="@item.DuongDanFile" target="_blank" class="text-info small text-decoration-none">🔍 Mở xem trước</a>
+                                </td>
+                                <td>@item.HocPhan?.TenHocPhan</td>
+                                <td>@item.NguoiDung?.HoTen</td>
+                                <td>@item.NgayUpload.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <form asp-action="DuyetTaiLieu" method="post">
+                                            <input type="hidden" name="id" value="@item.TaiLieuID" />
+                                            <button type="submit" class="btn btn-sm btn-success fw-bold">✅ Duyệt</button>
+                                        </form>
+
+                                        <form asp-action="TuChoiTaiLieu" method="post">
+                                            <input type="hidden" name="id" value="@item.TaiLieuID" />
+                                            <button type="submit" class="btn btn-sm btn-danger fw-bold">❌ Từ chối</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-success fw-bold">
+                                🎉 Không có tài liệu nào đang chờ duyệt. Mọi thứ đều ổn!
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
