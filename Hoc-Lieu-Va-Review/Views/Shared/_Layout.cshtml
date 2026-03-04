@@ -27,17 +27,39 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
 
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            // Điều kiện User.IsInRole("Admin") để chỉ Admin mới thấy nút này
+                            // NHÓM MENU DÀNH RIÊNG CHO ADMIN
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Khoa" asp-action="Index">Quản lý Khoa</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-success fw-bold" asp-area="" asp-controller="Nganh" asp-action="Index">Quản lý Ngành</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-danger fw-bold" asp-area="" asp-controller="HocPhan" asp-action="Index">Quản lý Học phần</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-secondary fw-bold" asp-area="" asp-controller="NguoiDung" asp-action="Index">Quản lý Tài khoản</a>
+                                </li>
+                            }
+
+                            // NHÓM MENU DÀNH RIÊNG CHO GIẢNG VIÊN (ADMIN CŨNG XEM ĐƯỢC)
+                            @if (User.IsInRole("GiangVien") || User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-bold text-bg-danger rounded px-3 ms-2" asp-area="" asp-controller="KiemDuyet" asp-action="Index">Khu vực Kiểm Duyệt</a>
+                                </li>
+                            }
+
+                            // NHÓM MENU CHUNG (Sinh viên, Giảng viên, Admin đều thấy)
                             <li class="nav-item">
-                                <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Khoa" asp-action="Index">Quản lý Khoa</a>
+                                <a class="nav-link text-info fw-bold" asp-area="" asp-controller="TaiLieu" asp-action="Index">Kho Tài Liệu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-success fw-bold" asp-area="" asp-controller="Nganh" asp-action="Index">Quản lý Ngành</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-danger fw-bold" asp-area="" asp-controller="HocPhan" asp-action="Index">Quản lý Học phần</a>
+                                <a class="nav-link text-warning fw-bold" asp-area="" asp-controller="Review" asp-action="Index">Cộng đồng Review</a>
                             </li>
                         }
                     </ul>
