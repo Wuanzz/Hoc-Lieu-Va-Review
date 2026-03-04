@@ -1,0 +1,58 @@
+﻿
+@model Hoc_Lieu_Va_Review.Models.TaiLieu
+
+@{
+    ViewData["Title"] = "Upload Tài Liệu";
+}
+
+<div class="container mt-4">
+    <h2>Upload Tài Liệu Mới</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="HocPhanID" class="control-label fw-bold">Thuộc Học Phần <span class="text-danger">*</span></label>
+                    <select asp-for="HocPhanID" class="form-control" asp-items="ViewBag.HocPhanID">
+                        <option value="">-- Chọn môn học --</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="TenTaiLieu" class="control-label fw-bold">Tên Tài Liệu <span class="text-danger">*</span></label>
+                    <input asp-for="TenTaiLieu" class="form-control" placeholder="Ví dụ: Đề thi giữa kỳ 2023..." />
+                    <span asp-validation-for="TenTaiLieu" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="LoaiTaiLieu" class="control-label fw-bold">Loại Tài Liệu <span class="text-danger">*</span></label>
+                    <select asp-for="LoaiTaiLieu" class="form-select">
+                        <option value="Slide">Slide bài giảng</option>
+                        <option value="DeThi">Đề thi / Bài tập</option>
+                        <option value="ThamKhao">Tài liệu tham khảo</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="control-label fw-bold">Chọn File đính kèm <span class="text-danger">*</span></label>
+                    <input type="file" name="fileUpload" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar" required />
+                    <small class="text-muted">Định dạng hỗ trợ: PDF, Word, PowerPoint, ZIP.</small>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Bắt đầu Upload</button>
+                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

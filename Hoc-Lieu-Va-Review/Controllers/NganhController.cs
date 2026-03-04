@@ -73,5 +73,79 @@ namespace Hoc_Lieu_Va_Review.Controllers
             ViewData["KhoaID"] = new SelectList(_context.Khoas, "KhoaID", "TenKhoa", nganh.KhoaID);
             return View(nganh);
         }
+        // CHỨC NĂNG SỬA (EDIT) 
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var nganh = await _context.Nganhs.FindAsync(id);
+            if (nganh == null) return NotFound();
+
+            // Truyền lại danh sách Khoa cho Dropdown, nhớ chọn sẵn Khoa hiện tại của Ngành này
+            ViewData["KhoaID"] = new SelectList(_context.Khoas, "KhoaID", "TenKhoa", nganh.KhoaID);
+            return View(nganh);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("NganhID,TenNganh,MoTa,KhoaID")] Nganh nganh)
+        {
+            if (id != nganh.NganhID) return NotFound();
+
+            // Vẫn phải có dòng này để bỏ qua lỗi validate đối tượng Khoa nhé
+            ModelState.Remove("Khoa");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(nganh);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!NganhExists(nganh.NganhID)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["KhoaID"] = new SelectList(_context.Khoas, "KhoaID", "TenKhoa", nganh.KhoaID);
+            return View(nganh);
+        }
+
+        private bool NganhExists(int id)
+        {
+            return _context.Nganhs.Any(e => e.NganhID == id);
+        }
+
+        // CHỨC NĂNG XÓA (DELETE)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            // Dùng Include để lấy tên Khoa hiển thị ra màn hình xác nhận xóa cho đẹp
+            var nganh = await _context.Nganhs
+                .Include(n => n.Khoa)
+                .FirstOrDefaultAsync(m => m.NganhID == id);
+
+            if (nganh == null) return NotFound();
+
+            return View(nganh);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var nganh = await _context.Nganhs.FindAsync(id);
+            if (nganh != null)
+            {
+                _context.Nganhs.Remove(nganh);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
