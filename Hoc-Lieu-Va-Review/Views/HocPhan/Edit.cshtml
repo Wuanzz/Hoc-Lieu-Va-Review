@@ -1,0 +1,80 @@
+﻿﻿
+@model Hoc_Lieu_Va_Review.Models.HocPhan
+
+@{
+    ViewData["Title"] = "Sửa Học Phần";
+}
+
+<div class="container mt-4">
+    <h2>Sửa thông tin Học Phần</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="HocPhanID" />
+
+                <div class="form-group mb-3">
+                    <label class="control-label fw-bold text-primary">Bước 1: Chọn Khoa</label>
+                    <select id="KhoaSelect" class="form-select" asp-items="ViewBag.KhoaList">
+                        <option value="">-- Vui lòng chọn Khoa --</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="NganhID" class="control-label fw-bold text-success">Bước 2: Chọn Ngành <span class="text-danger">*</span></label>
+                    <select asp-for="NganhID" id="NganhSelect" class="form-select" asp-items="ViewBag.NganhList">
+                        <option value="">-- Vui lòng chọn Khoa trước --</option>
+                    </select>
+                    <span asp-validation-for="NganhID" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="TenHocPhan" class="control-label fw-bold">Tên Học Phần <span class="text-danger">*</span></label>
+                    <input asp-for="TenHocPhan" class="form-control" />
+                    <span asp-validation-for="TenHocPhan" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="MoTa" class="control-label fw-bold">Mô tả</label>
+                    <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#KhoaSelect').change(function () {
+                var khoaId = $(this).val();
+                var nganhSelect = $('#NganhSelect');
+                nganhSelect.empty();
+                if (khoaId) {
+                    $.ajax({
+                        url: '/HocPhan/GetNganhByKhoa',
+                        type: 'GET',
+                        data: { khoaId: khoaId },
+                        success: function (data) {
+                            nganhSelect.append($('<option/>', { value: "", text: "-- Chọn Ngành --" }));
+                            $.each(data, function (index, item) {
+                                nganhSelect.append($('<option/>', { value: item.value, text: item.text }));
+                            });
+                        }
+                    });
+                } else {
+                    nganhSelect.append($('<option/>', { value: "", text: "-- Vui lòng chọn Khoa trước --" }));
+                }
+            });
+        });
+    </script>
+}
