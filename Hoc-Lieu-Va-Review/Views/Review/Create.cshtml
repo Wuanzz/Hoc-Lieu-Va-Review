@@ -1,0 +1,54 @@
+﻿
+@model Hoc_Lieu_Va_Review.Models.Review
+
+@{
+    ViewData["Title"] = "Viết Review Học Phần";
+}
+
+<div class="container mt-4">
+    <h2>Viết Đánh Giá (Review) Môn Học</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-7">
+            <form asp-action="Create">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="HocPhanID" class="control-label fw-bold">Môn học muốn đánh giá <span class="text-danger">*</span></label>
+                    <select asp-for="HocPhanID" class="form-select" asp-items="ViewBag.HocPhanID">
+                        <option value="">-- Chọn môn học --</option>
+                    </select>
+                    <span asp-validation-for="HocPhanID" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SoSao" class="control-label fw-bold">Chấm điểm (1-5 sao) <span class="text-danger">*</span></label>
+                    <select asp-for="SoSao" class="form-select w-50">
+                        <option value="5">⭐⭐⭐⭐⭐ (5 Sao - Xuất sắc)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 Sao - Tốt)</option>
+                        <option value="3">⭐⭐⭐ (3 Sao - Khá)</option>
+                        <option value="2">⭐⭐ (2 Sao - Trung bình)</option>
+                        <option value="1">⭐ (1 Sao - Cần cải thiện)</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="NoiDung" class="control-label fw-bold">Nội dung Review <span class="text-danger">*</span></label>
+                    <textarea asp-for="NoiDung" class="form-control" rows="5" placeholder="Chia sẻ kinh nghiệm học tập, thầy cô, cách thi cử của môn này nhé..."></textarea>
+                    <span asp-validation-for="NoiDung" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-warning fw-bold text-dark">Đăng Review</button>
+                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
