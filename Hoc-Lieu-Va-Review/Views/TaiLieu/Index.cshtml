@@ -52,9 +52,9 @@
                             }
                         </td>
                         <td class="text-center">
-                            <a class="btn btn-sm btn-success" asp-action="Download" asp-route-id="@item.TaiLieuID">
-                                Tải về (@item.LuotTai)
-                            </a>
+                            <a class="btn btn-sm btn-info text-white" asp-action="Details" asp-route-id="@item.TaiLieuID">Xem & Bình luận</a>
+                            |
+                            <a class="btn btn-sm btn-success" asp-action="Download" asp-route-id="@item.TaiLieuID">Tải về (@item.LuotTai)</a>
                         </td>
                     </tr>
                 }
