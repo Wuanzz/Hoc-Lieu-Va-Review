@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Hoc_Lieu_Va_Review.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims; // Cần cái này để lấy ID người dùng đăng nhập
+using Hoc_Lieu_Va_Review.Services;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -12,11 +13,13 @@ namespace Hoc_Lieu_Va_Review.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment; // Dùng để truy cập thư mục wwwroot
+        private readonly GeminiService _geminiService; // Dùng để gọi API Gemini
 
-        public TaiLieuController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public TaiLieuController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, GeminiService geminiService)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _geminiService = geminiService;
         }
 
         // Hiển thị danh sách Tài Liệu
@@ -147,8 +150,10 @@ namespace Hoc_Lieu_Va_Review.Controllers
 
             if (taiLieu == null) return NotFound();
 
-            // Đã đổi thành NgayDang chuẩn theo file BinhLuan.cs
-            taiLieu.BinhLuans = taiLieu.BinhLuans.OrderByDescending(b => b.NgayDang).ToList();
+            // Chỉ lấy những bình luận qua ải kiểm duyệt
+            taiLieu.BinhLuans = taiLieu.BinhLuans
+                .Where(b => b.TrangThaiDuyet == "HopLe" || b.TrangThaiDuyet == "DaDuyet")
+                .OrderByDescending(b => b.NgayDang).ToList();
 
             return View(taiLieu);
         }
@@ -158,25 +163,35 @@ namespace Hoc_Lieu_Va_Review.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddComment(int TaiLieuID, string NoiDung)
         {
-            if (string.IsNullOrWhiteSpace(NoiDung))
-            {
-                return RedirectToAction(nameof(Details), new { id = TaiLieuID });
-            }
+            if (string.IsNullOrWhiteSpace(NoiDung)) return RedirectToAction(nameof(Details), new { id = TaiLieuID });
 
             var userIdClaim = User.FindFirst("UserId");
             if (userIdClaim != null)
             {
+                // ĐEM NỘI DUNG ĐI HỎI TRỢ LÝ AI
+                string ketQuaDuyet = await _geminiService.KiemDuyetVanBan(NoiDung);
+
                 var binhLuan = new BinhLuan
                 {
                     TaiLieuID = TaiLieuID,
                     NoiDung = NoiDung,
-                    NgayDang = DateTime.Now,         // Chuẩn tên biến của cậu
-                    TrangThaiDuyet = "DaDuyet",      // Thêm trạng thái duyệt để không bị lỗi DB
+                    NgayDang = DateTime.Now,
+                    TrangThaiDuyet = ketQuaDuyet, // Gán kết quả của AI trực tiếp vào Database!
                     NguoiDungID = int.Parse(userIdClaim.Value)
                 };
 
                 _context.BinhLuans.Add(binhLuan);
                 await _context.SaveChangesAsync();
+
+                // Gửi thông báo cho Sinh viên biết AI đang làm việc
+                if (ketQuaDuyet == "TuChoi")
+                {
+                    TempData["ThongBaoBaoCao"] = "❌ Bình luận của bạn chứa từ ngữ vi phạm và đã bị AI tự động chặn hiển thị!";
+                }
+                else if (ketQuaDuyet == "ChoDuyet")
+                {
+                    TempData["ThongBaoBaoCao"] = "⏳ Bình luận của bạn có từ ngữ lạ, đang được đưa vào danh sách chờ Giảng viên duyệt.";
+                }
             }
 
             return RedirectToAction(nameof(Details), new { id = TaiLieuID });

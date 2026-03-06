@@ -1,9 +1,9 @@
 ﻿﻿@{
     ViewData["Title"] = "Bảng điều khiển Giảng viên";
-    var danhSachTaiLieu = ViewBag.TaiLieuChoDuyet as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
 
-    // Khai báo thêm biến lấy danh sách Báo Cáo
+    var danhSachTaiLieu = ViewBag.TaiLieuChoDuyet as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
     var danhSachBaoCao = ViewBag.DanhSachBaoCao as List<Hoc_Lieu_Va_Review.Models.BaoCao>;
+    var binhLuanChoDuyet = ViewBag.BinhLuanChoDuyet as List<Hoc_Lieu_Va_Review.Models.BinhLuan>;
 }
 
 <div class="container mt-4">
@@ -133,6 +133,61 @@
                     else
                     {
                         <tr><td colspan="5" class="text-center py-4 text-success fw-bold">Không có báo cáo vi phạm nào. Cộng đồng đang rất trong sạch!</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 border-top border-warning border-4 mt-5">
+        <div class="card-header bg-white py-3 d-flex justify-content-between">
+            <h5 class="mb-0 text-warning fw-bold text-dark">3. Bình Luận Bị AI Cảnh Báo (Cần Người Thật Duyệt)</h5>
+            <span class="badge bg-warning text-dark">Chờ duyệt: @(binhLuanChoDuyet?.Count ?? 0)</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 40%">Nội dung bình luận</th>
+                        <th>Tại tài liệu</th>
+                        <th>Người đăng</th>
+                        <th>Thời gian</th>
+                        <th class="text-center">Quyết định</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (binhLuanChoDuyet != null && binhLuanChoDuyet.Any())
+                    {
+                        foreach (var item in binhLuanChoDuyet)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark fst-italic">"@item.NoiDung"</td>
+                                <td>
+                                    <a asp-controller="TaiLieu" asp-action="Details" asp-route-id="@item.TaiLieuID" target="_blank" class="text-decoration-none">
+                                        @item.TaiLieu?.TenTaiLieu
+                                    </a>
+                                </td>
+                                <td>@item.NguoiDung?.HoTen</td>
+                                <td>@item.NgayDang.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <form asp-action="DuyetBinhLuan" method="post">
+                                            <input type="hidden" name="id" value="@item.BinhLuanID" />
+                                            <button type="submit" class="btn btn-sm btn-success fw-bold">✅ Cho phép</button>
+                                        </form>
+
+                                        <form asp-action="TuChoiBinhLuan" method="post">
+                                            <input type="hidden" name="id" value="@item.BinhLuanID" />
+                                            <button type="submit" class="btn btn-sm btn-danger fw-bold">❌ Chặn</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center py-4 text-success fw-bold">AI đã xử lý tốt, không có bình luận nào cần bạn phải duyệt tay!</td></tr>
                     }
                 </tbody>
             </table>

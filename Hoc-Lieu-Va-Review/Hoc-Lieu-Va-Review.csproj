@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Hoc_Lieu_Va_Review</RootNamespace>
+    <UserSecretsId>4a2f258f-b050-437e-a34b-01732126d95f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

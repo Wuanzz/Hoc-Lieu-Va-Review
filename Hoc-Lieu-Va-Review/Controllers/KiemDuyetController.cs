@@ -18,7 +18,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
         // Hiển thị Dashboard Kiểm duyệt (Gồm cả Tài liệu chờ duyệt & Báo cáo)
         public async Task<IActionResult> Index()
         {
-            // Lấy danh sách tài liệu mới tải lên chờ duyệt
+            // Tài liệu chờ duyệt
             var taiLieuChoDuyet = await _context.TaiLieus
                 .Include(t => t.HocPhan)
                 .Include(t => t.NguoiDung)
@@ -26,16 +26,25 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 .OrderBy(t => t.NgayUpload)
                 .ToListAsync();
 
-            // Lấy danh sách các báo cáo đang chờ xử lý
+            // Báo cáo chờ xử lý
             var danhSachBaoCao = await _context.BaoCaos
-                .Include(b => b.TaiLieu)       // Kéo theo thông tin tài liệu bị báo cáo
-                .Include(b => b.NguoiDung)     // Kéo theo thông tin sinh viên gửi báo cáo
+                .Include(b => b.TaiLieu)       
+                .Include(b => b.NguoiDung)     
                 .Where(b => b.TrangThaiXuLy == "ChoXuLy")
                 .OrderBy(b => b.NgayBaoCao)
                 .ToListAsync();
 
+            // Bình luận bị AI nghi ngờ (ChoDuyet)
+            var binhLuanChoDuyet = await _context.BinhLuans
+                .Include(b => b.NguoiDung)
+                .Include(b => b.TaiLieu) // Kéo theo tài liệu để Giảng viên biết họ đang bình luận ở đâu
+                .Where(b => b.TrangThaiDuyet == "ChoDuyet")
+                .OrderBy(b => b.NgayDang)
+                .ToListAsync();
+
             ViewBag.TaiLieuChoDuyet = taiLieuChoDuyet;
-            ViewBag.DanhSachBaoCao = danhSachBaoCao; // Gửi sang View
+            ViewBag.DanhSachBaoCao = danhSachBaoCao;
+            ViewBag.BinhLuanChoDuyet = binhLuanChoDuyet;
 
             return View();
         }
@@ -86,6 +95,31 @@ namespace Hoc_Lieu_Va_Review.Controllers
             {
                 // Báo cáo sai, chỉ đánh dấu báo cáo là đã xử lý, giữ nguyên tài liệu
                 baoCao.TrangThaiXuLy = "DaXuLy";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // XỬ LÝ BÌNH LUẬN
+        [HttpPost]
+        public async Task<IActionResult> DuyetBinhLuan(int id)
+        {
+            var binhLuan = await _context.BinhLuans.FindAsync(id);
+            if (binhLuan != null)
+            {
+                binhLuan.TrangThaiDuyet = "HopLe"; // Cho phép hiển thị
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TuChoiBinhLuan(int id)
+        {
+            var binhLuan = await _context.BinhLuans.FindAsync(id);
+            if (binhLuan != null)
+            {
+                binhLuan.TrangThaiDuyet = "TuChoi"; // Chặn vĩnh viễn
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));

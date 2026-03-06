@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Hoc_Lieu_Va_Review.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Hoc_Lieu_Va_Review.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Đăng ký GeminiService và cấp cho nó một cái HttpClient để lướt web gọi API
+builder.Services.AddHttpClient<GeminiService>();
 
 // Thêm cấu hình Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
