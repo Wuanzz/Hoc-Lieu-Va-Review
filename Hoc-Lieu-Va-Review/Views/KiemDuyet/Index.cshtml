@@ -1,19 +1,20 @@
-﻿
-@{
+﻿﻿@{
     ViewData["Title"] = "Bảng điều khiển Giảng viên";
-    // Lấy dữ liệu từ ViewBag ép kiểu về List
     var danhSachTaiLieu = ViewBag.TaiLieuChoDuyet as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
+
+    // Khai báo thêm biến lấy danh sách Báo Cáo
+    var danhSachBaoCao = ViewBag.DanhSachBaoCao as List<Hoc_Lieu_Va_Review.Models.BaoCao>;
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>🛡️ Không gian Kiểm duyệt Nội dung</h2>
-        <span class="badge bg-danger fs-6">Chờ xử lý: @(danhSachTaiLieu?.Count ?? 0) mục</span>
     </div>
 
-    <div class="card shadow-sm border-0 border-top border-primary border-4">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0 text-primary fw-bold">1. Tài Liệu Cần Phê Duyệt</h5>
+    <div class="card shadow-sm border-0 border-top border-primary border-4 mb-5">
+        <div class="card-header bg-white py-3 d-flex justify-content-between">
+            <h5 class="mb-0 text-primary fw-bold">1. Tài Liệu Mới Cần Phê Duyệt</h5>
+            <span class="badge bg-primary">Chờ duyệt: @(danhSachTaiLieu?.Count ?? 0)</span>
         </div>
         <div class="card-body p-0">
             <table class="table table-hover mb-0">
@@ -34,8 +35,7 @@
                             <tr>
                                 <td class="fw-bold">
                                     @item.TenTaiLieu
-                                    <br />
-                                    <a href="@item.DuongDanFile" target="_blank" class="text-info small text-decoration-none">🔍 Mở xem trước</a>
+                                    <br /><a href="@item.DuongDanFile" target="_blank" class="text-info small text-decoration-none">🔍 Xem nội dung</a>
                                 </td>
                                 <td>@item.HocPhan?.TenHocPhan</td>
                                 <td>@item.NguoiDung?.HoTen</td>
@@ -46,10 +46,9 @@
                                             <input type="hidden" name="id" value="@item.TaiLieuID" />
                                             <button type="submit" class="btn btn-sm btn-success fw-bold">✅ Duyệt</button>
                                         </form>
-
                                         <form asp-action="TuChoiTaiLieu" method="post">
                                             <input type="hidden" name="id" value="@item.TaiLieuID" />
-                                            <button type="submit" class="btn btn-sm btn-danger fw-bold">❌ Từ chối</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">❌ Từ chối</button>
                                         </form>
                                     </div>
                                 </td>
@@ -58,15 +57,85 @@
                     }
                     else
                     {
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-success fw-bold">
-                                🎉 Không có tài liệu nào đang chờ duyệt. Mọi thứ đều ổn!
-                            </td>
-                        </tr>
+                        <tr><td colspan="5" class="text-center py-4 text-success fw-bold">Không có tài liệu nào chờ duyệt.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 border-top border-danger border-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between">
+            <h5 class="mb-0 text-danger fw-bold">2. Báo Cáo Vi Phạm Cần Xử Lý</h5>
+            <span class="badge bg-danger">Chờ xử lý: @(danhSachBaoCao?.Count ?? 0)</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tài liệu bị báo cáo</th>
+                        <th>Lý do vi phạm</th>
+                        <th>Người báo cáo</th>
+                        <th>Thời gian</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (danhSachBaoCao != null && danhSachBaoCao.Any())
+                    {
+                        foreach (var item in danhSachBaoCao)
+                        {
+                            <tr>
+                                <td class="fw-bold text-danger">
+                                    @item.TaiLieu?.TenTaiLieu
+                                    <br /><a href="@item.TaiLieu?.DuongDanFile" target="_blank" class="text-info small text-decoration-none">🔍 Kiểm tra file</a>
+                                </td>
+                                <td class="text-wrap" style="max-width: 250px;">@item.LyDo</td>
+                                <td>@item.NguoiDung?.HoTen</td>
+                                <td>@item.NgayBaoCao.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button type="button" class="btn btn-sm btn-danger fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnTaiLieu_@item.BaoCaoID">
+                                            🗑️ Ẩn tài liệu
+                                        </button>
+
+                                        <div class="modal fade text-start" id="modalAnTaiLieu_@item.BaoCaoID" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content border-danger">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title fw-bold">⚠️ Xác nhận Ẩn Tài Liệu</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-dark text-wrap">
+                                                        <p>Bạn có chắc chắn muốn ẩn tài liệu <strong class="text-danger">@item.TaiLieu?.TenTaiLieu</strong> khỏi hệ thống không?</p>
+                                                        <p class="text-muted small mb-0">Hành động này sẽ khiến sinh viên không thể nhìn thấy hay tải xuống tài liệu này nữa.</p>
+                                                    </div>
+                                                    <div class="modal-footer bg-light">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                                                        <form asp-action="XoaTaiLieuViPham" method="post">
+                                                            <input type="hidden" name="id" value="@item.BaoCaoID" />
+                                                            <button type="submit" class="btn btn-danger fw-bold">Xác nhận Ẩn</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <form asp-action="BoQuaBaoCao" method="post">
+                                            <input type="hidden" name="id" value="@item.BaoCaoID" />
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary fw-bold">👁️ Bỏ qua</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center py-4 text-success fw-bold">Không có báo cáo vi phạm nào. Cộng đồng đang rất trong sạch!</td></tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
