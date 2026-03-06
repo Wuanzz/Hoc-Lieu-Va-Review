@@ -1,0 +1,54 @@
+﻿
+@model IEnumerable<Hoc_Lieu_Va_Review.Models.Nganh>
+
+@{
+    ViewData["Title"] = "Quản lý Ngành";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Danh sách Ngành Đào Tạo</h2>
+
+    <p>
+        <a class="btn btn-success" asp-action="Create">Thêm Ngành mới</a>
+    </p>
+
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>STT</th>
+                <th>Tên Ngành</th>
+                <th>Thuộc Khoa</th>
+                <th>Mô tả</th>
+                <th class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int stt = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td class="fw-bold text-primary">@item.TenNganh</td>
+
+                        <td>@item.Khoa?.TenKhoa</td>
+
+                        <td>@item.MoTa</td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-primary disabled" href="#">Sửa</a> |
+                            <a class="btn btn-sm btn-danger disabled" href="#">Xóa</a>
+                        </td>
+                    </tr>
+                    stt++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">Chưa có dữ liệu Ngành nào trong hệ thống.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

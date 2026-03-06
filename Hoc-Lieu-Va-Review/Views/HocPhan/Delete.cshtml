@@ -1,0 +1,38 @@
+﻿
+@model Hoc_Lieu_Va_Review.Models.HocPhan
+
+@{
+    ViewData["Title"] = "Xóa Học Phần";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger">Xóa Học Phần</h2>
+    <h4 class="mb-4">Bạn có chắc chắn muốn xóa môn học này không?</h4>
+    <div>
+        <div class="card shadow-sm col-md-6">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Tên Môn:</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.TenHocPhan</dd>
+
+                    <dt class="col-sm-4">Thuộc Ngành:</dt>
+                    <dd class="col-sm-8 text-success">@Model.Nganh?.TenNganh</dd>
+
+                    <dt class="col-sm-4">Thuộc Khoa:</dt>
+                    <dd class="col-sm-8 text-primary">@Model.Nganh?.Khoa?.TenKhoa</dd>
+
+                    <dt class="col-sm-4">Mô tả:</dt>
+                    <dd class="col-sm-8">@Model.MoTa</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="HocPhanID" />
+                <button type="submit" class="btn btn-danger">Xác nhận Xóa</button>
+                <a class="btn btn-secondary ms-2" asp-action="Index">Hủy và Quay lại</a>
+            </form>
+        </div>
+    </div>
+</div>

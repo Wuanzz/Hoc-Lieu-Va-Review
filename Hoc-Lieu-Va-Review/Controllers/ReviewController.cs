@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hoc_Lieu_Va_Review.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Hoc_Lieu_Va_Review.Models;
-using Microsoft.AspNetCore.Authorization;
+
 namespace Hoc_Lieu_Va_Review.Controllers
 {
+    [Authorize]
     public class ReviewController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,7 +16,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
             _context = context;
         }
 
-        // 1. Hiển thị danh sách các bài Review
+        // Hiển thị danh sách các bài Review
         public async Task<IActionResult> Index()
         {
             // Lấy danh sách review, include thêm thông tin Môn học và Người đăng để hiển thị
