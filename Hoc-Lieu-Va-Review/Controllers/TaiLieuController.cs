@@ -25,6 +25,8 @@ namespace Hoc_Lieu_Va_Review.Controllers
             var danhSachTaiLieu = await _context.TaiLieus
                 .Include(t => t.HocPhan)
                 .Include(t => t.NguoiDung)
+                .Where(t => t.TrangThaiDuyet == "HopLe")
+                .OrderByDescending(t => t.NgayUpload)
                 .ToListAsync();
             return View(danhSachTaiLieu);
         }
