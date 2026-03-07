@@ -1,9 +1,10 @@
-﻿﻿@{
+﻿@{
     ViewData["Title"] = "Bảng điều khiển Giảng viên";
 
     var danhSachTaiLieu = ViewBag.TaiLieuChoDuyet as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
     var danhSachBaoCao = ViewBag.DanhSachBaoCao as List<Hoc_Lieu_Va_Review.Models.BaoCao>;
     var binhLuanChoDuyet = ViewBag.BinhLuanChoDuyet as List<Hoc_Lieu_Va_Review.Models.BinhLuan>;
+    var reviewChoDuyet = ViewBag.ReviewChoDuyet as List<Hoc_Lieu_Va_Review.Models.Review>;
 }
 
 <div class="container mt-4">
@@ -35,7 +36,7 @@
                             <tr>
                                 <td class="fw-bold">
                                     @item.TenTaiLieu
-                                    <br /><a href="@item.DuongDanFile" target="_blank" class="text-info small text-decoration-none">🔍 Xem nội dung</a>
+                                    <br /><a href="@item.DuongDanFile" target="_blank" class="text-info small text-decoration-none"> Xem nội dung</a>
                                 </td>
                                 <td>@item.HocPhan?.TenHocPhan</td>
                                 <td>@item.NguoiDung?.HoTen</td>
@@ -44,11 +45,11 @@
                                     <div class="d-flex justify-content-center gap-2">
                                         <form asp-action="DuyetTaiLieu" method="post">
                                             <input type="hidden" name="id" value="@item.TaiLieuID" />
-                                            <button type="submit" class="btn btn-sm btn-success fw-bold">✅ Duyệt</button>
+                                            <button type="submit" class="btn btn-sm btn-success fw-bold"> Duyệt</button>
                                         </form>
                                         <form asp-action="TuChoiTaiLieu" method="post">
                                             <input type="hidden" name="id" value="@item.TaiLieuID" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">❌ Từ chối</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold"> Từ chối</button>
                                         </form>
                                     </div>
                                 </td>
@@ -88,7 +89,7 @@
                             <tr>
                                 <td class="fw-bold text-danger">
                                     @item.TaiLieu?.TenTaiLieu
-                                    <br /><a href="@item.TaiLieu?.DuongDanFile" target="_blank" class="text-info small text-decoration-none">🔍 Kiểm tra file</a>
+                                    <br /><a href="@item.TaiLieu?.DuongDanFile" target="_blank" class="text-info small text-decoration-none"> Kiểm tra file</a>
                                 </td>
                                 <td class="text-wrap" style="max-width: 250px;">@item.LyDo</td>
                                 <td>@item.NguoiDung?.HoTen</td>
@@ -96,14 +97,14 @@
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <button type="button" class="btn btn-sm btn-danger fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnTaiLieu_@item.BaoCaoID">
-                                            🗑️ Ẩn tài liệu
+                                             Ẩn tài liệu
                                         </button>
 
                                         <div class="modal fade text-start" id="modalAnTaiLieu_@item.BaoCaoID" tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content border-danger">
                                                     <div class="modal-header bg-danger text-white">
-                                                        <h5 class="modal-title fw-bold">⚠️ Xác nhận Ẩn Tài Liệu</h5>
+                                                        <h5 class="modal-title fw-bold"> Xác nhận Ẩn Tài Liệu</h5>
                                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body text-dark text-wrap">
@@ -123,7 +124,7 @@
 
                                         <form asp-action="BoQuaBaoCao" method="post">
                                             <input type="hidden" name="id" value="@item.BaoCaoID" />
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary fw-bold">👁️ Bỏ qua</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary fw-bold"> Bỏ qua</button>
                                         </form>
                                     </div>
                                 </td>
@@ -142,6 +143,7 @@
     <div class="card shadow-sm border-0 border-top border-warning border-4 mt-5">
         <div class="card-header bg-white py-3 d-flex justify-content-between">
             <h5 class="mb-0 text-warning fw-bold text-dark">3. Bình Luận Bị AI Cảnh Báo (Cần Người Thật Duyệt)</h5>
+            <h5 class="mb-0 text-warning fw-bold text-dark">3. Bình Luận Bị AI Cảnh Báo</h5>
             <span class="badge bg-warning text-dark">Chờ duyệt: @(binhLuanChoDuyet?.Count ?? 0)</span>
         </div>
         <div class="card-body p-0">
@@ -173,12 +175,12 @@
                                     <div class="d-flex justify-content-center gap-2">
                                         <form asp-action="DuyetBinhLuan" method="post">
                                             <input type="hidden" name="id" value="@item.BinhLuanID" />
-                                            <button type="submit" class="btn btn-sm btn-success fw-bold">✅ Cho phép</button>
+                                            <button type="submit" class="btn btn-sm btn-success fw-bold"> Cho phép</button>
                                         </form>
 
                                         <form asp-action="TuChoiBinhLuan" method="post">
                                             <input type="hidden" name="id" value="@item.BinhLuanID" />
-                                            <button type="submit" class="btn btn-sm btn-danger fw-bold">❌ Chặn</button>
+                                            <button type="submit" class="btn btn-sm btn-danger fw-bold"> Chặn</button>
                                         </form>
                                     </div>
                                 </td>
@@ -193,4 +195,60 @@
             </table>
         </div>
     </div>
-</div>
+
+    <div class="card shadow-sm border-0 border-top border-info border-4 mt-5 mb-5">
+        <div class="card-header bg-white py-3 d-flex justify-content-between">
+            <h5 class="mb-0 text-info fw-bold text-dark">4. Bài Đánh Giá Bị AI Cảnh Báo (Cần Người Thật Duyệt)</h5>
+            <h5 class="mb-0 text-info fw-bold text-dark">4. Bài Đánh Giá Bị AI Cảnh Báo</h5>
+            <span class="badge bg-info text-dark">Chờ duyệt: @(reviewChoDuyet?.Count ?? 0)</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 40%">Nội dung đánh giá</th>
+                        <th>Môn học</th>
+                        <th>Người đăng</th>
+                        <th>Số sao</th>
+                        <th class="text-center">Quyết định</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (reviewChoDuyet != null && reviewChoDuyet.Any())
+                    {
+                        foreach (var item in reviewChoDuyet)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark fst-italic">"@item.NoiDung"</td>
+                                <td>@item.HocPhan?.TenHocPhan</td>
+                                <td>@item.NguoiDung?.HoTen</td>
+                                <td>
+                                    @for (int i = 0; i < item.SoSao; i++)
+                                    {
+                                        <span class="text-warning">⭐</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <form asp-action="DuyetReview" method="post">
+                                            <input type="hidden" name="id" value="@item.ReviewID" />
+                                            <button type="submit" class="btn btn-sm btn-success fw-bold"> Cho phép</button>
+                                        </form>
+
+                                        <form asp-action="TuChoiReview" method="post">
+                                            <input type="hidden" name="id" value="@item.ReviewID" />
+                                            <button type="submit" class="btn btn-sm btn-danger fw-bold"> Chặn</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center py-4 text-success fw-bold">Không có bài đánh giá nào cần bạn duyệt. AI đã lo liệu hết!</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
