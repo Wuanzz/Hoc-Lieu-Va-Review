@@ -5,6 +5,16 @@
     ViewData["Title"] = "Cộng đồng Review";
 }
 
+@if (TempData["ThongBaoReview"] != null)
+{
+    // Cảnh báo màu đỏ nếu bị từ chối/chờ duyệt, màu xanh nếu thành công
+    var alertClass = TempData["ThongBaoReview"].ToString().Contains("thành công") ? "alert-success" : "alert-warning";
+    <div class="alert @alertClass alert-dismissible fade show shadow-sm mt-3" role="alert">
+        <strong>Thông báo:</strong> @TempData["ThongBaoReview"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Cộng đồng Review Học Phần</h2>
