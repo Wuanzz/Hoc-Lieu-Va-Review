@@ -78,7 +78,7 @@
                         <th>Lý do vi phạm</th>
                         <th>Người báo cáo</th>
                         <th>Thời gian</th>
-                        <th class="text-center">Hành động</th>
+                        <th class="text-center">Quyết định</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -199,7 +199,6 @@
     <div class="card shadow-sm border-0 border-top border-info border-4 mt-5 mb-5">
         <div class="card-header bg-white py-3 d-flex justify-content-between">
             <h5 class="mb-0 text-info fw-bold text-dark">4. Bài Đánh Giá Bị AI Cảnh Báo (Cần Người Thật Duyệt)</h5>
-            <h5 class="mb-0 text-info fw-bold text-dark">4. Bài Đánh Giá Bị AI Cảnh Báo</h5>
             <span class="badge bg-info text-dark">Chờ duyệt: @(reviewChoDuyet?.Count ?? 0)</span>
         </div>
         <div class="card-body p-0">
@@ -232,12 +231,12 @@
                                     <div class="d-flex justify-content-center gap-2">
                                         <form asp-action="DuyetReview" method="post">
                                             <input type="hidden" name="id" value="@item.ReviewID" />
-                                            <button type="submit" class="btn btn-sm btn-success fw-bold"> Cho phép</button>
+                                            <button type="submit" class="btn btn-sm btn-success fw-bold">✅ Cho phép</button>
                                         </form>
 
                                         <form asp-action="TuChoiReview" method="post">
                                             <input type="hidden" name="id" value="@item.ReviewID" />
-                                            <button type="submit" class="btn btn-sm btn-danger fw-bold"> Chặn</button>
+                                            <button type="submit" class="btn btn-sm btn-danger fw-bold">❌ Chặn</button>
                                         </form>
                                     </div>
                                 </td>
