@@ -68,7 +68,9 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item d-flex align-items-center">
-                                <span class="nav-link text-dark">Xin chào, <strong>@User.Identity.Name</strong>!</span>
+                                <a class="nav-link text-primary" asp-controller="HoSo" asp-action="Index">
+                                    Xin chào, <strong class="text-decoration-underline">@User.Identity.Name</strong>!
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="btn btn-outline-danger ms-2" asp-controller="Account" asp-action="Logout">Đăng xuất</a>

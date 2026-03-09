@@ -1,0 +1,130 @@
+﻿
+@model Hoc_Lieu_Va_Review.Models.NguoiDung
+@{
+    ViewData["Title"] = "Hồ Sơ Của Tôi";
+    var taiLieuCuaToi = ViewBag.TaiLieuCuaToi as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
+    var reviewCuaToi = ViewBag.ReviewCuaToi as List<Hoc_Lieu_Va_Review.Models.Review>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 border-top border-primary border-4 text-center pb-4">
+                <div class="card-body">
+                    <div class="mb-3 mt-3">
+                        <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+                            👤
+                        </span>
+                    </div>
+                    <h4 class="fw-bold">@Model.HoTen</h4>
+                    <p class="text-muted mb-1">@Model.Email</p>
+                    <div class="mt-2">
+                        @if (Model.VaiTro == "Admin")
+                        {
+                            <span class="badge bg-danger">Quản trị viên</span>
+                        }
+                        else if (Model.VaiTro == "GiangVien")
+                        {
+
+                            <span class="badge bg-warning text-dark">Giảng viên</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-info text-dark">Sinh viên</span>
+                        }
+                    </div>
+                    <hr />
+                    <p class="small text-muted mb-0">Tham gia từ: @Model.NgayDangKy.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-success">📄 Tài liệu tôi đã chia sẻ (@taiLieuCuaToi?.Count)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @if (taiLieuCuaToi != null && taiLieuCuaToi.Any())
+                        {
+                            foreach (var item in taiLieuCuaToi)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">@item.TenTaiLieu</h6>
+                                        <small class="text-muted">Môn: @item.HocPhan?.TenHocPhan | Ngày: @item.NgayUpload.ToString("dd/MM/yyyy")</small>
+                                    </div>
+                                    <div>
+                                        @if (item.TrangThaiDuyet == "HopLe")
+                                        {
+                                            <span class="badge bg-success">Đã duyệt</span>
+                                        }
+                                        else if (item.TrangThaiDuyet == "ChoDuyet")
+                                        {
+
+                                            <span class="badge bg-warning text-dark">Đang chờ</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge bg-danger">Bị từ chối</span>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item text-muted text-center py-4">Bạn chưa tải lên tài liệu nào.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-warning text-dark">⭐ Đánh giá tôi đã viết (@reviewCuaToi?.Count)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @if (reviewCuaToi != null && reviewCuaToi.Any())
+                        {
+                            foreach (var item in reviewCuaToi)
+                            {
+                                <li class="list-group-item p-3">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1 fw-bold text-primary">@item.HocPhan?.TenHocPhan</h6>
+                                        <small class="text-muted">@item.NgayDang.ToString("dd/MM/yyyy")</small>
+                                    </div>
+                                    <p class="mb-1 small text-truncate" style="max-width: 90%;">"@item.NoiDung"</p>
+                                    <div>
+                                        @if (item.TrangThaiDuyet == "HopLe" || item.TrangThaiDuyet == "DaDuyet")
+                                        {
+                                            <span class="badge bg-success">Hiển thị</span>
+                                        }
+                                        else if (item.TrangThaiDuyet == "ChoDuyet")
+                                        {
+
+                                            <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge bg-danger">Bị chặn</span>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item text-muted text-center py-4">Bạn chưa viết bài đánh giá nào.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
