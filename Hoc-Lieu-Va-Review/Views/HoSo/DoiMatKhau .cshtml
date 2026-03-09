@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Đổi Mật Khẩu";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 border-top border-danger border-4">
+                <div class="card-header bg-white py-3 text-center">
+                    <h4 class="mb-0 fw-bold text-danger"> Đổi Mật Khẩu</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    @if (ViewBag.Loi != null)
+                    {
+                        <div class="alert alert-danger py-2">@ViewBag.Loi</div>
+                    }
+
+                    <form asp-action="DoiMatKhau" method="post">
+                        <div class="form-group mb-3">
+                            <label class="fw-bold mb-1">Mật khẩu hiện tại <span class="text-danger">*</span></label>
+                            <input type="password" name="matKhauCu" class="form-control" required placeholder="Nhập mật khẩu đang dùng..." />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="fw-bold mb-1">Mật khẩu mới <span class="text-danger">*</span></label>
+                            <input type="password" name="matKhauMoi" class="form-control" required minlength="6" placeholder="Ít nhất 6 ký tự..." />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="fw-bold mb-1">Xác nhận mật khẩu mới <span class="text-danger">*</span></label>
+                            <input type="password" name="xacNhanMatKhau" class="form-control" required placeholder="Nhập lại mật khẩu mới..." />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger fw-bold"> Lưu Mật Khẩu Mới</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Hủy bỏ</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

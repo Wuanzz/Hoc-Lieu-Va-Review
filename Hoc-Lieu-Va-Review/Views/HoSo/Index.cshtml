@@ -1,5 +1,4 @@
-﻿
-@model Hoc_Lieu_Va_Review.Models.NguoiDung
+﻿@model Hoc_Lieu_Va_Review.Models.NguoiDung
 @{
     ViewData["Title"] = "Hồ Sơ Của Tôi";
     var taiLieuCuaToi = ViewBag.TaiLieuCuaToi as List<Hoc_Lieu_Va_Review.Models.TaiLieu>;
@@ -7,13 +6,20 @@
 }
 
 <div class="container mt-4">
+    @if (TempData["ThongBaoDoiMatKhau"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <strong>✅ Chúc mừng!</strong> @TempData["ThongBaoDoiMatKhau"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="row">
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm border-0 border-top border-primary border-4 text-center pb-4">
                 <div class="card-body">
                     <div class="mb-3 mt-3">
                         <span class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
-                            👤
                         </span>
                     </div>
                     <h4 class="fw-bold">@Model.HoTen</h4>
@@ -36,6 +42,9 @@
                     </div>
                     <hr />
                     <p class="small text-muted mb-0">Tham gia từ: @Model.NgayDangKy.ToString("dd/MM/yyyy")</p>
+                    <div class="mt-3">
+                        <a asp-action="DoiMatKhau" class="btn btn-outline-danger btn-sm w-100 fw-bold"> Đổi mật khẩu</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -43,7 +52,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold text-success">📄 Tài liệu tôi đã chia sẻ (@taiLieuCuaToi?.Count)</h5>
+                    <h5 class="mb-0 fw-bold text-success"> Tài liệu tôi đã chia sẻ (@taiLieuCuaToi?.Count)</h5>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -85,7 +94,7 @@
 
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold text-warning text-dark">⭐ Đánh giá tôi đã viết (@reviewCuaToi?.Count)</h5>
+                    <h5 class="mb-0 fw-bold text-warning text-dark"> Đánh giá tôi đã viết (@reviewCuaToi?.Count)</h5>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -127,4 +136,3 @@
             </div>
         </div>
     </div>
-</div>
