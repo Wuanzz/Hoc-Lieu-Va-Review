@@ -1,5 +1,4 @@
-﻿
-@model IEnumerable<Hoc_Lieu_Va_Review.Models.TaiLieu>
+﻿@model IEnumerable<Hoc_Lieu_Va_Review.Models.TaiLieu>
 
 @{
     ViewData["Title"] = "Quản lý Tài Liệu";
@@ -7,6 +6,34 @@
 
 <div class="container mt-4">
     <h2 class="mb-4">Kho Tài Liệu</h2>
+
+    <div class="card shadow-sm border-0 bg-light mb-4">
+        <div class="card-body">
+            <form asp-controller="TaiLieu" asp-action="Index" method="get">
+                <div class="row g-2 align-items-center">
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">🔍</span>
+                            <input type="text" name="timKiem" class="form-control" placeholder="Nhập tên tài liệu, đề thi, giáo trình..." value="@ViewBag.TuKhoa">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <select name="locHocPhan" class="form-select" asp-items="ViewBag.DanhSachHocPhan">
+                            <option value="">-- Tất cả các môn học --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Tìm</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
 
     <p>
         <a class="btn btn-primary" asp-action="Create">Upload Tài Liệu</a>

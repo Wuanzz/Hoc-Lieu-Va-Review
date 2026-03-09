@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Hoc_Lieu_Va_Review.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims; // Cần cái này để lấy ID người dùng đăng nhập
+using Hoc_Lieu_Va_Review.Models;
 using Hoc_Lieu_Va_Review.Services;
 
 namespace Hoc_Lieu_Va_Review.Controllers
@@ -22,15 +22,35 @@ namespace Hoc_Lieu_Va_Review.Controllers
             _geminiService = geminiService;
         }
 
-        // Hiển thị danh sách Tài Liệu
-        public async Task<IActionResult> Index()
+        // Hiển thị danh sách Tài Liệu (CÓ TÌM KIẾM VÀ BỘ LỌC)
+        public async Task<IActionResult> Index(string timKiem, int? locHocPhan)
         {
-            var danhSachTaiLieu = await _context.TaiLieus
+            // Bắt đầu với câu truy vấn cơ bản (Chỉ lấy tài liệu Hợp Lệ)
+            var query = _context.TaiLieus
                 .Include(t => t.HocPhan)
                 .Include(t => t.NguoiDung)
                 .Where(t => t.TrangThaiDuyet == "HopLe")
-                .OrderByDescending(t => t.NgayUpload)
-                .ToListAsync();
+                .AsQueryable();
+
+            // LỌC 1: Nếu người dùng có gõ chữ vào ô tìm kiếm
+            if (!string.IsNullOrEmpty(timKiem))
+            {
+                query = query.Where(t => t.TenTaiLieu.Contains(timKiem));
+                ViewBag.TuKhoa = timKiem; // Giữ lại từ khóa trên ô nhập để user đỡ bỡ ngỡ
+            }
+
+            // LỌC 2: Nếu người dùng chọn một môn học cụ thể từ Dropdown
+            if (locHocPhan.HasValue && locHocPhan.Value > 0)
+            {
+                query = query.Where(t => t.HocPhanID == locHocPhan.Value);
+            }
+
+            // Truyền danh sách Môn học sang View để vẽ cái Dropdown (thanh chọn)
+            ViewBag.DanhSachHocPhan = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan", locHocPhan);
+
+            // Sắp xếp mới nhất lên đầu và chốt lấy dữ liệu
+            var danhSachTaiLieu = await query.OrderByDescending(t => t.NgayUpload).ToListAsync();
+
             return View(danhSachTaiLieu);
         }
 
