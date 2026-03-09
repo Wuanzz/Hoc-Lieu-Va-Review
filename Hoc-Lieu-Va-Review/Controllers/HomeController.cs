@@ -23,15 +23,16 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 .Include(t => t.NguoiDung)
                 .Where(t => t.TrangThaiDuyet == "HopLe")
                 .OrderByDescending(t => t.NgayUpload)
-                .Take(6) // Chỉ lấy 6 cái mới nhất cho đỡ chật trang
+                .Take(6)
                 .ToListAsync();
 
-            // Lấy 4 Review mới nhất
+            // Lấy 4 Review mới nhất và Chỉ lấy bài Hợp Lệ / Đã Duyệt
             var reviewMoi = await _context.Reviews
                 .Include(r => r.HocPhan)
                 .Include(r => r.NguoiDung)
+                .Where(r => r.TrangThaiDuyet == "HopLe" || r.TrangThaiDuyet == "DaDuyet")
                 .OrderByDescending(r => r.NgayDang)
-                .Take(4) // Lấy 4 bài
+                .Take(4) 
                 .ToListAsync();
 
             // Gửi sang View
