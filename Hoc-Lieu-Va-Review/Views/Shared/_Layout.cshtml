@@ -4,27 +4,30 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Hoc_Lieu_Va_Review</title>
+    <title>@ViewData["Title"] - EduShare</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Hoc_Lieu_Va_Review_styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Hoc_Lieu_Va_Review_Demooo.styles.css" asp-append-version="true" />
 </head>
-<body>
+
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Hoc_Lieu_Va_Review</a>
+                <a class="navbar-brand fw-bold text-primary fs-4" asp-area="" asp-controller="Home" asp-action="Index">
+                    🎓 EduShare
+                </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 align-items-center">
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark fw-bold me-2" asp-area="" asp-controller="Home" asp-action="Index">Trang Chủ</a>
                         </li>
 
                         @if (User.Identity.IsAuthenticated)
@@ -64,7 +67,7 @@
                         }
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center">
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item d-flex align-items-center">
@@ -73,13 +76,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-outline-danger ms-2" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                <a class="btn btn-outline-danger ms-2 btn-sm fw-bold" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                                <a class="btn btn-primary fw-bold" asp-controller="Account" asp-action="Login">Đăng nhập</a>
                             </li>
                         }
                     </ul>
@@ -87,17 +90,66 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <footer class="custom-footer mt-auto py-5 position-static">
+        <hr class="mb-5" style="border-top: 1px solid #dee2e6; opacity: 0.5;">
+
         <div class="container">
-            &copy; 2026 - Hoc_Lieu_Va_Review - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-4 pe-md-4 footer-border-right mb-4 mb-md-0">
+                    <h4 class="fw-bold mb-4 d-flex align-items-center">
+                        <span class="me-2" style="color: #fbbc04; font-size: 1.8rem;">🎓</span> EduShare
+                    </h4>
+                    <p class="mb-2 fw-semibold">Cam kết tài liệu chuẩn xác 100%</p>
+                    <p class="mb-4 small">Trao tri thức - Nhận niềm tin</p>
+
+                    <div class="d-flex gap-3">
+                        <a href="#" class="social-btn text-decoration-none"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn text-decoration-none"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-btn text-decoration-none"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 px-md-4 footer-border-right mb-4 mb-md-0">
+                    <h5 class="fw-bold mb-4">Liên Hệ Hỗ Trợ</h5>
+                    <div class="d-flex mb-3 align-items-start">
+                        <span class="footer-icon-yellow me-2">📍</span>
+                        <span class="small pt-1">280 An Dương Vương, Q.5, TP. Hồ Chí Minh</span>
+                    </div>
+                    <div class="d-flex mb-3 align-items-center">
+                        <span class="footer-icon-yellow me-2">📞</span>
+                        <span class="small">0909 123 456 ( 8:00 - 22:00 )</span>
+                    </div>
+                    <div class="d-flex mb-3 align-items-center">
+                        <span class="footer-icon-yellow me-2">✉️</span>
+                        <span class="small">edushare.support@gmail.com</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 ps-md-4">
+                    <h5 class="fw-bold mb-4">Chứng Nhận & Bản Quyền</h5>
+                    <p class="small mb-3">Tuân thủ bản quyền nội dung số</p>
+                    <div class="d-flex gap-2 mb-4">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-icon">🅿️</div>
+                        <div class="payment-icon">🏦</div>
+                    </div>
+                    <hr style="border-color: #2d3342;" class="mb-3" />
+                    <p class="mb-1 small text-darker">&copy; 2026 EduShare. All rights reserved</p>
+                    <p class="mb-0 small">Designed by <strong>Nhóm 4</strong></p>
+                </div>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
