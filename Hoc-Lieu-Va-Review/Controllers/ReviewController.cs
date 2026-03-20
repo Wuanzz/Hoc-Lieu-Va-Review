@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hoc_Lieu_Va_Review.Models;
+using Hoc_Lieu_Va_Review.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-// Bổ sung thư viện Services để gọi AI
-using Hoc_Lieu_Va_Review.Models;
-using Hoc_Lieu_Va_Review.Services;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -25,12 +24,12 @@ namespace Hoc_Lieu_Va_Review.Controllers
         public async Task<IActionResult> Index()
         {
             var reviews = await _context.Reviews
-            .Include(r => r.HocPhan)
-            .Include(r => r.NguoiDung)
-            // 3. CHỈ LẤY CÁC BÀI REVIEW HỢP LỆ (Đã được AI hoặc Giảng viên duyệt)
-            .Where(r => r.TrangThaiDuyet == "HopLe" || r.TrangThaiDuyet == "DaDuyet")
-            .OrderByDescending(r => r.NgayDang)
-            .ToListAsync();
+                .Include(r => r.HocPhan)
+                .Include(r => r.NguoiDung)
+                // 3. CHỈ LẤY CÁC BÀI REVIEW HỢP LỆ (Đã được AI hoặc Giảng viên duyệt)
+                .Where(r => r.TrangThaiDuyet == "HopLe" || r.TrangThaiDuyet == "DaDuyet")
+                .OrderByDescending(r => r.NgayDang)
+                .ToListAsync();
             return View(reviews);
         }
 
@@ -69,15 +68,15 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 // 5. Gửi thông báo bằng TempData để hiện popup xanh/đỏ bên ngoài giao diện
                 if (ketQuaDuyet == "TuChoi")
                 {
-                    TempData["ThongBaoReview"] = " Bài đánh giá chứa nội dung vi phạm và đã bị AI chặn!";
+                    TempData["ThongBaoReview"] = "❌ Bài đánh giá chứa nội dung vi phạm và đã bị AI chặn!";
                 }
                 else if (ketQuaDuyet == "ChoDuyet")
                 {
-                    TempData["ThongBaoReview"] = " Bài đánh giá có từ ngữ lạ, đang chờ Giảng viên duyệt.";
+                    TempData["ThongBaoReview"] = "⏳ Bài đánh giá có từ ngữ lạ, đang chờ Giảng viên duyệt.";
                 }
                 else
                 {
-                    TempData["ThongBaoReview"] = " Đăng bài đánh giá thành công!";
+                    TempData["ThongBaoReview"] = "✅ Đăng bài đánh giá thành công!";
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -116,36 +115,37 @@ namespace Hoc_Lieu_Va_Review.Controllers
         // HÀM XỬ LÝ GỬI BÌNH LUẬN (CÓ AI KIỂM DUYỆT)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddComment(int ReviewID, string NoiDung)
+        // Bổ sung thêm tham số ParentID
+        public async Task<IActionResult> AddComment(int ReviewID, string NoiDung, int? ParentID)
         {
             if (string.IsNullOrWhiteSpace(NoiDung)) return RedirectToAction(nameof(Details), new { id = ReviewID });
 
             var userIdClaim = User.FindFirst("UserId");
             if (userIdClaim != null)
             {
-                // Gọi AI vào kiểm duyệt chữ
+                // Vẫn qua AI duyệt như bình thường
                 string ketQuaDuyet = await _geminiService.KiemDuyetVanBan(NoiDung);
 
                 var binhLuan = new BinhLuan
                 {
-                    ReviewID = ReviewID, // Gắn ID của bài Review vào
+                    ReviewID = ReviewID,
                     NoiDung = NoiDung,
                     NgayDang = DateTime.Now,
                     TrangThaiDuyet = ketQuaDuyet,
-                    NguoiDungID = int.Parse(userIdClaim.Value)
+                    NguoiDungID = int.Parse(userIdClaim.Value),
+                    ParentID = ParentID // Gắn ID của bình luận cha vào đây
                 };
 
                 _context.BinhLuans.Add(binhLuan);
                 await _context.SaveChangesAsync();
 
-                // Gửi thông báo cho người dùng
                 if (ketQuaDuyet == "TuChoi")
                 {
-                    TempData["ThongBaoBinhLuan"] = " Bình luận của bạn chứa từ ngữ vi phạm và đã bị AI tự động chặn!";
+                    TempData["ThongBaoBinhLuan"] = "❌ Bình luận của bạn chứa từ ngữ vi phạm và đã bị AI tự động chặn!";
                 }
                 else if (ketQuaDuyet == "ChoDuyet")
                 {
-                    TempData["ThongBaoBinhLuan"] = " Bình luận có từ ngữ lạ, đang chờ Giảng viên duyệt.";
+                    TempData["ThongBaoBinhLuan"] = "⏳ Bình luận có từ ngữ lạ, đang chờ Giảng viên duyệt.";
                 }
             }
 
