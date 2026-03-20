@@ -52,9 +52,9 @@ button.accept-policy {
     color: #a0a5b1;
 }
 
-    .custom-footer h4, .custom-footer h5 {
-        color: #ffffff;
-    }
+.custom-footer h4, .custom-footer h5 {
+    color: #ffffff;
+}
 
 @media (min-width: 768px) {
     .footer-border-right {
@@ -83,9 +83,9 @@ button.accept-policy {
     transition: all 0.3s;
 }
 
-    .social-btn:hover {
-        background-color: #ffffff;
-    }
+.social-btn:hover {
+    background-color: #ffffff;
+}
 
 .payment-icon {
     width: 45px;
