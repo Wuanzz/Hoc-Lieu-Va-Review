@@ -9,7 +9,7 @@
     @if (TempData["ThongBaoDoiMatKhau"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <strong> Chúc mừng!</strong> @TempData["ThongBaoDoiMatKhau"]
+            <strong>✅ Chúc mừng!</strong> @TempData["ThongBaoDoiMatKhau"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
@@ -62,7 +62,7 @@
                             Thay avatar
                         </button>
 
-                        <a asp-action="DoiMatKhau" class="btn btn-outline-danger btn-sm w-100 fw-bold"> Đổi mật khẩu</a>
+                        <a asp-action="DoiMatKhau" class="btn btn-outline-danger btn-sm w-100 fw-bold">Đổi mật khẩu</a>
                     </div>
 
                     @if (TempData["ThongBaoHoSo"] != null)
