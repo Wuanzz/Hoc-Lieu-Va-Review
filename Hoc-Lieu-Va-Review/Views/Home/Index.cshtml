@@ -37,8 +37,8 @@
                                 <h5 class="card-title text-truncate fw-bold" title="@item.TenTaiLieu">@item.TenTaiLieu</h5>
                                 <h6 class="card-subtitle mb-2 text-muted small">Môn: @item.HocPhan?.TenHocPhan</h6>
                                 <div class="mt-3 text-dark small bg-light p-2 rounded">
-                                    <span>👤 Đăng bởi: <strong>@item.NguoiDung?.HoTen</strong></span> <br />
-                                    <span class="text-muted">📅 @item.NgayUpload.ToString("dd/MM/yyyy") | 💾 @item.KichThuoc MB</span>
+                                    <span>Đăng bởi: <strong>@item.NguoiDung?.HoTen</strong></span> <br />
+                                    <span class="text-muted">@item.NgayUpload.ToString("dd/MM/yyyy") | 💾 @item.KichThuoc MB</span>
                                 </div>
                             </div>
                             <div class="card-footer bg-white border-0 pt-0">
