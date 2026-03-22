@@ -94,4 +94,50 @@
             }
         </tbody>
     </table>
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="mt-4 mb-5">
+            <ul class="pagination justify-content-center shadow-sm">
+
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link fw-bold text-primary" asp-action="Index"
+                       asp-route-page="@(ViewBag.CurrentPage - 1)"
+                       asp-route-timKiem="@ViewBag.TuKhoa"
+                       asp-route-locHocPhan="@ViewBag.LocHocPhan">&laquo; Trước</a>
+                </li>
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    // Luôn in ra: Trang 1, Trang cuối, và các trang lân cận trang hiện tại
+                    if (i == 1 || i == ViewBag.TotalPages || Math.Abs(i - ViewBag.CurrentPage) <= 1)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link fw-bold" asp-action="Index"
+                               asp-route-page="@i"
+                               asp-route-timKiem="@ViewBag.TuKhoa"
+                               asp-route-locHocPhan="@ViewBag.LocHocPhan">@i</a>
+                        </li>
+                    }
+                    // In dấu ... ở nửa đầu nếu khoảng cách quá xa
+                    else if (i == 2 && ViewBag.CurrentPage > 3)
+                    {
+                        <li class="page-item disabled"><span class="page-link text-muted fw-bold">...</span></li>
+                    }
+                    // In dấu ... ở nửa sau nếu khoảng cách quá xa
+                    else if (i == ViewBag.TotalPages - 1 && ViewBag.CurrentPage < ViewBag.TotalPages - 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link text-muted fw-bold">...</span></li>
+                    }
+                }
+
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link fw-bold text-primary" asp-action="Index"
+                       asp-route-page="@(ViewBag.CurrentPage + 1)"
+                       asp-route-timKiem="@ViewBag.TuKhoa"
+                       asp-route-locHocPhan="@ViewBag.LocHocPhan">Sau &raquo;</a>
+                </li>
+
+            </ul>
+        </nav>
+    }
 </div>

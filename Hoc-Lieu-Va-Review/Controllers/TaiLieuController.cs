@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Hoc_Lieu_Va_Review.Models;
+using Hoc_Lieu_Va_Review.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims; // Cần cái này để lấy ID người dùng đăng nhập
-using Hoc_Lieu_Va_Review.Models;
-using Hoc_Lieu_Va_Review.Services;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -23,8 +23,10 @@ namespace Hoc_Lieu_Va_Review.Controllers
         }
 
         // Hiển thị danh sách Tài Liệu (CÓ TÌM KIẾM VÀ BỘ LỌC)
-        public async Task<IActionResult> Index(string timKiem, int? locHocPhan)
+        public async Task<IActionResult> Index(string timKiem, int? locHocPhan, int page = 1)
         {
+            int pageSize = 2; // Đặt số lượng tài liệu hiển thị trên 1 trang (có thể đổi thành 10, 15 tùy ý)
+
             // Bắt đầu với câu truy vấn cơ bản (Chỉ lấy tài liệu Hợp Lệ)
             var query = _context.TaiLieus
                 .Include(t => t.HocPhan)
@@ -47,9 +49,21 @@ namespace Hoc_Lieu_Va_Review.Controllers
 
             // Truyền danh sách Môn học sang View để vẽ cái Dropdown (thanh chọn)
             ViewBag.DanhSachHocPhan = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan", locHocPhan);
+            ViewBag.LocHocPhan = locHocPhan; // Giữ lại ID môn học để chuyển trang không bị mất lọc
 
-            // Sắp xếp mới nhất lên đầu và chốt lấy dữ liệu
-            var danhSachTaiLieu = await query.OrderByDescending(t => t.NgayUpload).ToListAsync();
+            // THUẬT TOÁN PHÂN TRANG
+            int totalItems = await query.CountAsync(); // Đếm tổng số kết quả
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize); // Tính tổng số trang làm tròn lên
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            // Sắp xếp mới nhất lên đầu và chốt lấy dữ liệu bằng Skip & Take
+            var danhSachTaiLieu = await query
+                .OrderByDescending(t => t.NgayUpload)
+                .Skip((page - 1) * pageSize) // Bỏ qua các bài của trang trước
+                .Take(pageSize)              // Lấy đúng số lượng của trang hiện tại
+                .ToListAsync();
 
             return View(danhSachTaiLieu);
         }
