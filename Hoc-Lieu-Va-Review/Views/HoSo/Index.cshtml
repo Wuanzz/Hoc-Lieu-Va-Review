@@ -62,7 +62,7 @@
                             Thay avatar
                         </button>
 
-                        <a asp-action="DoiMatKhau" class="btn btn-outline-danger btn-sm w-100 fw-bold">Đổi mật khẩu</a>
+                        <a asp-action="DoiMatKhau" class="btn btn-outline-danger btn-sm w-100 fw-bold"> Đổi mật khẩu</a>
                     </div>
 
                     @if (TempData["ThongBaoHoSo"] != null)
@@ -71,7 +71,7 @@
                     }
                     @if (TempData["LoiHoSo"] != null)
                     {
-                        <div class="alert alert-danger mt-3 mx-3 py-2 small mb-0"> @TempData["LoiHoSo"]</div>
+                        <div class="alert alert-danger mt-3 mx-3 py-2 small mb-0">❌ @TempData["LoiHoSo"]</div>
                     }
                 </div>
             </div>
@@ -142,10 +142,13 @@
 
                                         <div class="pe-3 w-100">
                                             @if (item.TrangThaiDuyet == "HopLe" || item.TrangThaiDuyet == "DaDuyet")
+
                                             {
                                                 <a asp-controller="Review" asp-action="Details" asp-route-id="@item.ReviewID" class="text-decoration-none h6 mb-1 fw-bold text-primary d-block stretched-link">@item.HocPhan?.TenHocPhan</a>
                                             }
+
                                             else
+
                                             {
                                                 <h6 class="mb-1 fw-bold text-dark">@item.HocPhan?.TenHocPhan</h6>
                                             }
@@ -155,15 +158,20 @@
                                         <div class="text-end flex-shrink-0" style="min-width: 85px;">
                                             <small class="text-muted d-block mb-1">@item.NgayDang.ToString("dd/MM/yyyy")</small>
                                             @if (item.TrangThaiDuyet == "HopLe" || item.TrangThaiDuyet == "DaDuyet")
+
                                             {
                                                 <span class="badge bg-success">Hiển thị</span>
                                             }
+
                                             else if (item.TrangThaiDuyet == "ChoDuyet")
+
                                             {
 
                                                 <span class="badge bg-warning text-dark">Chờ duyệt</span>
                                             }
+
                                             else
+
                                             {
 
                                                 <span class="badge bg-danger">Bị chặn</span>
@@ -173,8 +181,11 @@
                                     </div>
                                 </li>
                             }
+
                         }
+
                         else
+
                         {
                             <li class="list-group-item text-muted text-center py-4">Bạn chưa viết bài đánh giá nào.</li>
                         }
@@ -183,4 +194,3 @@
             </div>
         </div>
     </div>
-</div>
