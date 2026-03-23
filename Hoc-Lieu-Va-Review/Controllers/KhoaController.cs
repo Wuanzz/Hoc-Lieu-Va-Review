@@ -17,10 +17,32 @@ namespace Hoc_Lieu_Va_Review.Controllers
         }
 
         // Action hiển thị danh sách Khoa
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string timKiem, int page = 1)
         {
-            // Lấy toàn bộ danh sách Khoa từ Database
-            var danhSachKhoa = await _context.Khoas.ToListAsync();
+            int pageSize = 5; // Quản lý danh mục thì để 5 dòng 1 trang cho gọn gàng
+
+            var query = _context.Khoas.AsQueryable();
+
+            // LỌC TÌM KIẾM THEO TÊN KHOA
+            if (!string.IsNullOrEmpty(timKiem))
+            {
+                query = query.Where(k => k.TenKhoa.Contains(timKiem));
+                ViewBag.TuKhoa = timKiem; // Giữ lại từ khóa trên ô tìm kiếm
+            }
+
+            // THUẬT TOÁN PHÂN TRANG
+            int totalItems = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            // Lấy dữ liệu theo trang
+            var danhSachKhoa = await query
+                .OrderBy(k => k.KhoaID) // Sắp xếp theo ID
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
             return View(danhSachKhoa);
         }
 

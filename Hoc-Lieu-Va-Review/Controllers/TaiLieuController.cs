@@ -25,7 +25,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
         // Hiển thị danh sách Tài Liệu (CÓ TÌM KIẾM VÀ BỘ LỌC)
         public async Task<IActionResult> Index(string timKiem, int? locHocPhan, int page = 1)
         {
-            int pageSize = 2; // Đặt số lượng tài liệu hiển thị trên 1 trang (có thể đổi thành 10, 15 tùy ý)
+            int pageSize = 8; // Đặt số lượng tài liệu hiển thị trên 1 trang (có thể đổi thành 10, 15 tùy ý)
 
             // Bắt đầu với câu truy vấn cơ bản (Chỉ lấy tài liệu Hợp Lệ)
             var query = _context.TaiLieus
