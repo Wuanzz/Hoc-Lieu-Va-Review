@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Hoc_Lieu_Va_Review.Models;
 using Microsoft.AspNetCore.Authorization;
-using Hoc_Lieu_Va_Review.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -17,12 +17,34 @@ namespace Hoc_Lieu_Va_Review.Controllers
         }
 
         // Hiển thị danh sách toàn bộ người dùng
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string timKiem, int page = 1)
         {
-            var danhSach = await _context.NguoiDungs
-                .OrderByDescending(n => n.NgayDangKy) // Ai mới đăng ký xếp lên đầu
+            int pageSize = 8; // Danh sách tài khoản thường dài
+
+            var query = _context.NguoiDungs.AsQueryable();
+
+            // LỌC TÌM KIẾM THEO TÊN HOẶC EMAIL
+            if (!string.IsNullOrEmpty(timKiem))
+            {
+                query = query.Where(nd => nd.HoTen.Contains(timKiem) || nd.Email.Contains(timKiem));
+                ViewBag.TuKhoa = timKiem; // Giữ lại từ khóa
+            }
+
+            // THUẬT TOÁN PHÂN TRANG
+            int totalItems = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            // Cắt dữ liệu theo trang
+            var danhSachNguoiDung = await query
+                .OrderByDescending(nd => nd.NgayDangKy) // Xếp tài khoản mới đăng ký lên đầu
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
-            return View(danhSach);
+
+            return View(danhSachNguoiDung);
         }
 
         // [GET] Mở form chỉnh sửa Quyền và Trạng thái
