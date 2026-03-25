@@ -1,9 +1,10 @@
-﻿using Hoc_Lieu_Va_Review.Models;
-using Hoc_Lieu_Va_Review.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+// Bổ sung thư viện Services để gọi AI
+using Hoc_Lieu_Va_Review.Models;
+using Hoc_Lieu_Va_Review.Services;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -86,6 +87,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
             return View(review);
         }
 
+        // Dropdown liên ho giữa Khoa -> Ngành -> Học Phần
         [HttpGet]
         public IActionResult GetNganhByKhoa(int khoaId)
         {

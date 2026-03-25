@@ -1,10 +1,10 @@
-﻿using Hoc_Lieu_Va_Review.Models;
-using Hoc_Lieu_Va_Review.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims; // Cần cái này để lấy ID người dùng đăng nhập
+using Hoc_Lieu_Va_Review.Models;
+using Hoc_Lieu_Va_Review.Services;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -72,7 +72,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["HocPhanID"] = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan");
+            ViewBag.DanhSachKhoa = new SelectList(_context.Khoas, "KhoaID", "TenKhoa");
             return View();
         }
 
@@ -138,6 +138,27 @@ namespace Hoc_Lieu_Va_Review.Controllers
 
             ViewData["HocPhanID"] = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan", taiLieu.HocPhanID);
             return View(taiLieu);
+        }
+
+        // Dropdown liên ho giữa Khoa -> Ngành -> Học Phần
+        [HttpGet]
+        public IActionResult GetNganhByKhoa(int khoaId)
+        {
+            var nganhs = _context.Nganhs
+                .Where(n => n.KhoaID == khoaId)
+                .Select(n => new { value = n.NganhID, text = n.TenNganh })
+                .ToList();
+            return Json(nganhs);
+        }
+
+        [HttpGet]
+        public IActionResult GetHocPhanByNganh(int nganhId)
+        {
+            var hocPhans = _context.HocPhans
+                .Where(h => h.NganhID == nganhId)
+                .Select(h => new { value = h.HocPhanID, text = h.TenHocPhan })
+                .ToList();
+            return Json(hocPhans);
         }
 
         // Hàm xử lý việc tải file và đếm lượt tải
