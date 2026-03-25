@@ -37,8 +37,8 @@
                                 <h5 class="card-title text-truncate fw-bold" title="@item.TenTaiLieu">@item.TenTaiLieu</h5>
                                 <h6 class="card-subtitle mb-2 text-muted small">Môn: @item.HocPhan?.TenHocPhan</h6>
                                 <div class="mt-3 text-dark small bg-light p-2 rounded">
-                                    <span>👤 Đăng bởi: <strong>@item.NguoiDung?.HoTen</strong></span> <br />
-                                    <span class="text-muted">📅 @item.NgayUpload.ToString("dd/MM/yyyy") | 💾 @item.KichThuoc MB</span>
+                                    <span>Đăng bởi: <strong>@item.NguoiDung?.HoTen</strong></span> <br />
+                                    <span class="text-muted">@item.NgayUpload.ToString("dd/MM/yyyy") | 💾 @item.KichThuoc MB</span>
                                 </div>
                             </div>
                             <div class="card-footer bg-white border-0 pt-0">
@@ -63,22 +63,32 @@
         <div class="list-group shadow-sm border-0">
             @if (reviewMoi != null && reviewMoi.Any())
             {
-                foreach (var item in reviewMoi)
+                @foreach (var item in reviewMoi)
                 {
-                    <div class="list-group-item list-group-item-action border-0 border-bottom p-3">
-                        <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                            <h6 class="mb-0 fw-bold text-primary">@item.HocPhan?.TenHocPhan</h6>
-                            <small class="text-muted">@item.NgayDang.ToString("dd/MM")</small>
-                        </div>
-                        <p class="mb-2 small text-truncate text-muted">"@item.NoiDung"</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small>
-                                @for (int i = 0; i < item.SoSao; i++)
-                                {
-                                    <span class="text-warning">⭐</span>
-                                }
-                            </small>
-                            <small class="fw-bold text-secondary">@item.NguoiDung?.HoTen</small>
+                    <div class="card shadow-sm border-0 mb-3 position-relative border-start border-warning border-4" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="pe-3 w-100">
+                                    <a asp-controller="Review" asp-action="Details" asp-route-id="@item.ReviewID" class="text-decoration-none h6 mb-1 fw-bold text-primary d-block stretched-link">
+                                        @item.HocPhan?.TenHocPhan
+                                    </a>
+                                    <p class="mb-0 small text-truncate text-muted" style="max-width: 95%;">"@item.NoiDung"</p>
+                                </div>
+
+                                <div class="text-end flex-shrink-0">
+                                    <small class="text-muted">@item.NgayDang.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2">
+                                <small class="text-dark fw-semibold">👤 @item.NguoiDung?.HoTen</small>
+                                <div>
+                                    @for (int i = 0; i < item.SoSao; i++)
+                                    {
+                                        <span class="text-warning" style="font-size: 0.8rem;">⭐</span>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
