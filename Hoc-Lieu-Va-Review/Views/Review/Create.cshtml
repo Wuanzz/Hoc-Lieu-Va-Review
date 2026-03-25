@@ -13,12 +13,34 @@
             <form asp-action="Create">
                 <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="HocPhanID" class="control-label fw-bold">Môn học muốn đánh giá <span class="text-danger">*</span></label>
-                    <select asp-for="HocPhanID" class="form-select" asp-items="ViewBag.HocPhanID">
-                        <option value="">-- Chọn môn học --</option>
-                    </select>
-                    <span asp-validation-for="HocPhanID" class="text-danger"></span>
+                <div class="card bg-light border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-primary mb-3">📍 Chọn môn học cần đánh giá</h6>
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">1. Khoa</label>
+                                <select id="KhoaID" class="form-select" asp-items="ViewBag.DanhSachKhoa">
+                                    <option value="">-- Chọn Khoa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">2. Ngành</label>
+                                <select id="NganhID" class="form-select" disabled>
+                                    <option value="">-- Vui lòng chọn Khoa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">3. Học Phần <span class="text-danger">*</span></label>
+                                <select name="HocPhanID" id="HocPhanID" class="form-select border-primary" required disabled>
+                                    <option value="">-- Vui lòng chọn Ngành</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group mb-3">
@@ -51,4 +73,49 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+
+            // KHI NGƯỜI DÙNG THAY ĐỔI KHOA
+            $('#KhoaID').change(function () {
+                var khoaId = $(this).val();
+
+                // Reset lại ô Ngành và Học Phần
+                $('#NganhID').empty().append('<option value="">-- Chọn Ngành --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
+
+                if (khoaId) {
+                    // Gọi AJAX lên hàm GetNganhByKhoa
+                    $.get('/Review/GetNganhByKhoa', { khoaId: khoaId }, function (data) {
+                        $.each(data, function (i, item) {
+                            $('#NganhID').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        // Mở khóa ô Ngành
+                        $('#NganhID').prop('disabled', false);
+                    });
+                }
+            });
+
+            // KHI NGƯỜI DÙNG THAY ĐỔI NGÀNH
+            $('#NganhID').change(function () {
+                var nganhId = $(this).val();
+
+                // Reset lại ô Học phần
+                $('#HocPhanID').empty().append('<option value="">-- Chọn Học Phần --</option>').prop('disabled', true);
+
+                if (nganhId) {
+                    // Gọi AJAX lên hàm GetHocPhanByNganh
+                    $.get('/Review/GetHocPhanByNganh', { nganhId: nganhId }, function (data) {
+                        $.each(data, function (i, item) {
+                            $('#HocPhanID').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        // Mở khóa ô Học phần
+                        $('#HocPhanID').prop('disabled', false);
+                    });
+                }
+            });
+
+        });
+    </script>
 }

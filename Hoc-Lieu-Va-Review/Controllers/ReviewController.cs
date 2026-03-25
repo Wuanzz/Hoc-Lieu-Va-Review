@@ -36,7 +36,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["HocPhanID"] = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan");
+            ViewBag.DanhSachKhoa = new SelectList(_context.Khoas, "KhoaID", "TenKhoa");
             return View();
         }
 
@@ -84,6 +84,28 @@ namespace Hoc_Lieu_Va_Review.Controllers
 
             ViewData["HocPhanID"] = new SelectList(_context.HocPhans, "HocPhanID", "TenHocPhan", review.HocPhanID);
             return View(review);
+        }
+
+        [HttpGet]
+        public IActionResult GetNganhByKhoa(int khoaId)
+        {
+            // Lấy các ngành thuộc Khoa được chọn
+            var nganhs = _context.Nganhs
+                .Where(n => n.KhoaID == khoaId)
+                .Select(n => new { value = n.NganhID, text = n.TenNganh })
+                .ToList();
+            return Json(nganhs);
+        }
+
+        [HttpGet]
+        public IActionResult GetHocPhanByNganh(int nganhId)
+        {
+            // Lấy các học phần thuộc Ngành được chọn
+            var hocPhans = _context.HocPhans
+                .Where(h => h.NganhID == nganhId)
+                .Select(h => new { value = h.HocPhanID, text = h.TenHocPhan })
+                .ToList();
+            return Json(hocPhans);
         }
 
         // HÀM MỞ TRANG CHI TIẾT REVIEW 
