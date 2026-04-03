@@ -1,0 +1,121 @@
+﻿
+@model Hoc_Lieu_Va_Review.Models.Review
+
+@{
+    ViewData["Title"] = "Viết Review Học Phần";
+}
+
+<div class="container mt-4">
+    <h2>Viết Đánh Giá (Review) Môn Học</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-7">
+            <form asp-action="Create">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="card bg-light border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-primary mb-3"> Chọn môn học cần đánh giá</h6>
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">1. Khoa</label>
+                                <select id="KhoaID" class="form-select" asp-items="ViewBag.DanhSachKhoa">
+                                    <option value="">-- Chọn Khoa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">2. Ngành</label>
+                                <select id="NganhID" class="form-select" disabled>
+                                    <option value="">-- Vui lòng chọn Khoa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">3. Học Phần <span class="text-danger">*</span></label>
+                                <select name="HocPhanID" id="HocPhanID" class="form-select border-primary" required disabled>
+                                    <option value="">-- Vui lòng chọn Ngành</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SoSao" class="control-label fw-bold">Chấm điểm (1-5 sao) <span class="text-danger">*</span></label>
+                    <select asp-for="SoSao" class="form-select w-50">
+                        <option value="5">⭐⭐⭐⭐⭐ (5 Sao - Xuất sắc)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 Sao - Tốt)</option>
+                        <option value="3">⭐⭐⭐ (3 Sao - Khá)</option>
+                        <option value="2">⭐⭐ (2 Sao - Trung bình)</option>
+                        <option value="1">⭐ (1 Sao - Cần cải thiện)</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="NoiDung" class="control-label fw-bold">Nội dung Review <span class="text-danger">*</span></label>
+                    <textarea asp-for="NoiDung" class="form-control" rows="5" placeholder="Chia sẻ kinh nghiệm học tập, thầy cô, cách thi cử của môn này nhé..."></textarea>
+                    <span asp-validation-for="NoiDung" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-warning fw-bold text-dark">Đăng Review</button>
+                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+
+            // KHI NGƯỜI DÙNG THAY ĐỔI KHOA
+            $('#KhoaID').change(function () {
+                var khoaId = $(this).val();
+
+                // Reset lại ô Ngành và Học Phần
+                $('#NganhID').empty().append('<option value="">-- Chọn Ngành --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
+
+                if (khoaId) {
+                    // Gọi AJAX lên hàm GetNganhByKhoa
+                    $.get('/Review/GetNganhByKhoa', { khoaId: khoaId }, function (data) {
+                        $.each(data, function (i, item) {
+                            $('#NganhID').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        // Mở khóa ô Ngành
+                        $('#NganhID').prop('disabled', false);
+                    });
+                }
+            });
+
+            // KHI NGƯỜI DÙNG THAY ĐỔI NGÀNH
+            $('#NganhID').change(function () {
+                var nganhId = $(this).val();
+
+                // Reset lại ô Học phần
+                $('#HocPhanID').empty().append('<option value="">-- Chọn Học Phần --</option>').prop('disabled', true);
+
+                if (nganhId) {
+                    // Gọi AJAX lên hàm GetHocPhanByNganh
+                    $.get('/Review/GetHocPhanByNganh', { nganhId: nganhId }, function (data) {
+                        $.each(data, function (i, item) {
+                            $('#HocPhanID').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        // Mở khóa ô Học phần
+                        $('#HocPhanID').prop('disabled', false);
+                    });
+                }
+            });
+
+        });
+    </script>
+}

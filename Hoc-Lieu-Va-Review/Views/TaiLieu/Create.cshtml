@@ -1,0 +1,119 @@
+﻿@model Hoc_Lieu_Va_Review.Models.TaiLieu
+
+@{
+    ViewData["Title"] = "Upload Tài Liệu";
+}
+
+<div class="container mt-4">
+    <h2>Upload Tài Liệu Mới</h2>
+    <hr />
+    <div class="row">
+         <div class="col-md-7">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="card bg-light border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-primary mb-3">Chọn môn học cho tài liệu này</h6>
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">1. Khoa</label>
+                                <select id="KhoaID" class="form-select" asp-items="ViewBag.DanhSachKhoa">
+                                    <option value="">-- Chọn Khoa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">2. Ngành</label>
+                                <select id="NganhID" class="form-select" disabled>
+                                    <option value="">-- Vui lòng chọn Khoa</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">3. Học Phần <span class="text-danger">*</span></label>
+                                <select name="HocPhanID" id="HocPhanID" class="form-select border-primary" required disabled>
+                                    <option value="">-- Vui lòng chọn Ngành</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="TenTaiLieu" class="control-label fw-bold">Tên Tài Liệu <span class="text-danger">*</span></label>
+                    <input asp-for="TenTaiLieu" class="form-control" placeholder="Ví dụ: Đề thi giữa kỳ 2023..." />
+                    <span asp-validation-for="TenTaiLieu" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="LoaiTaiLieu" class="control-label fw-bold">Loại Tài Liệu <span class="text-danger">*</span></label>
+                    <select asp-for="LoaiTaiLieu" class="form-select">
+                        <option value="Slide">Slide bài giảng</option>
+                        <option value="DeThi">Đề thi / Bài tập</option>
+                        <option value="ThamKhao">Tài liệu tham khảo</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="control-label fw-bold">Chọn File đính kèm <span class="text-danger">*</span></label>
+                    <input type="file" name="fileUpload" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar" required />
+                    <small class="text-muted">Định dạng hỗ trợ: PDF, Word, PowerPoint, ZIP.</small>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Bắt đầu Upload</button>
+                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+
+            // 1. Khi chọn Khoa -> Lấy danh sách Ngành
+            $('#KhoaID').change(function () {
+                var khoaId = $(this).val();
+
+                $('#NganhID').empty().append('<option value="">-- Chọn Ngành --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
+
+                if (khoaId) {
+                    // Gọi về TaiLieuController
+                    $.get('/TaiLieu/GetNganhByKhoa', { khoaId: khoaId }, function (data) {
+                        $.each(data, function (i, item) {
+                            $('#NganhID').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        $('#NganhID').prop('disabled', false);
+                    });
+                }
+            });
+
+            // 2. Khi chọn Ngành -> Lấy danh sách Học Phần
+            $('#NganhID').change(function () {
+                var nganhId = $(this).val();
+
+                $('#HocPhanID').empty().append('<option value="">-- Chọn Học Phần --</option>').prop('disabled', true);
+
+                if (nganhId) {
+                    // Gọi về TaiLieuController
+                    $.get('/TaiLieu/GetHocPhanByNganh', { nganhId: nganhId }, function (data) {
+                        $.each(data, function (i, item) {
+                            $('#HocPhanID').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        $('#HocPhanID').prop('disabled', false);
+                    });
+                }
+            });
+
+        });
+    </script>
+}

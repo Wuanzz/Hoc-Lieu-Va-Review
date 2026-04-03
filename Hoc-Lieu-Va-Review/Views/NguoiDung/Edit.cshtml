@@ -1,0 +1,46 @@
+﻿@model Hoc_Lieu_Va_Review.Models.NguoiDung
+
+@{
+    ViewData["Title"] = "Cập nhật Quyền";
+}
+
+<div class="container mt-4">
+    <h2>Cập nhật Tài khoản: <span class="text-primary">@Model.HoTen</span></h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body bg-light">
+                    <p><strong>Email:</strong> @Model.Email</p>
+                    <p><strong>Ngày tham gia:</strong> @Model.NgayDangKy.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="NguoiDungID" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="VaiTro" class="control-label fw-bold">Vai trò (Phân quyền) <span class="text-danger">*</span></label>
+                    <select asp-for="VaiTro" class="form-select border-primary">
+                        <option value="SinhVien">Sinh viên (Người dùng chung)</option>
+                        <option value="GiangVien">Giảng viên (Người kiểm duyệt)</option>
+                        <option value="Admin">Admin (Quản trị viên)</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="TrangThai" class="control-label fw-bold">Trạng thái tài khoản <span class="text-danger">*</span></label>
+                    <select asp-for="TrangThai" class="form-select border-danger">
+                        <option value="HoatDong">Cho phép Hoạt động</option>
+                        <option value="Khoa">Khóa tài khoản (Cấm đăng nhập)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary fw-bold">Lưu thay đổi</button>
+                    <a class="btn btn-secondary ms-2" asp-action="Index">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

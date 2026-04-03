@@ -1,0 +1,117 @@
+﻿@model Hoc_Lieu_Va_Review.Models.Review
+@{
+    ViewData["Title"] = "Chi tiết Đánh giá";
+    var danhSachBinhLuan = ViewBag.DanhSachBinhLuan as List<Hoc_Lieu_Va_Review.Models.BinhLuan>;
+}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a asp-action="Index" class="btn btn-outline-secondary fw-bold">&larr; Quay lại Cộng đồng Review</a>
+    </div>
+
+    <div class="card shadow-sm border-0 border-top border-warning border-4 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold text-primary mb-0">Môn: @Model.HocPhan?.TenHocPhan</h3>
+                <div class="fs-5">
+                    @for (int i = 0; i < Model.SoSao; i++)
+                    {
+                        <span class="text-warning">⭐</span>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center mb-4 text-muted small bg-light p-2 rounded">
+                <span class="fw-bold text-dark me-3">👤 Đăng bởi: @Model.NguoiDung?.HoTen</span>
+                <span>📅 Ngày đăng: @Model.NgayDang.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+
+            <p class="fs-5 lh-lg text-dark" style="white-space: pre-line;">@Model.NoiDung</p>
+        </div>
+    </div>
+
+    @if (TempData["ThongBaoBinhLuan"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+            <strong>Hệ thống AI:</strong> @TempData["ThongBaoBinhLuan"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold text-dark">💬 Thảo luận (@danhSachBinhLuan?.Count bình luận)</h5>
+        </div>
+        <div class="card-body bg-light">
+
+            <form asp-action="AddComment" method="post" class="mb-5">
+                <input type="hidden" name="ReviewID" value="@Model.ReviewID" />
+                <div class="input-group">
+                    <input type="text" name="NoiDung" class="form-control" placeholder="Bạn có đồng ý với đánh giá này không? Hãy chia sẻ ý kiến..." required />
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Gửi bình luận</button>
+                </div>
+                <small class="text-muted mt-1 d-block fst-italic">Bình luận của bạn sẽ được AI kiểm duyệt trước khi hiển thị.</small>
+            </form>
+
+            <div class="list-group border-0">
+                @{
+                    // Lấy ra các bình luận Gốc (không phải là câu trả lời của ai)
+                    var binhLuanGoc = danhSachBinhLuan?.Where(b => b.ParentID == null).ToList();
+                }
+
+                @if (binhLuanGoc != null && binhLuanGoc.Any())
+                {
+                    foreach (var cmt in binhLuanGoc)
+                    {
+                        <div class="list-group-item border-0 border-bottom py-3">
+                            <div class="d-flex w-100 justify-content-between mb-1">
+                                <strong class="text-primary">@cmt.NguoiDung?.HoTen</strong>
+                                <small class="text-muted">@cmt.NgayDang.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <p class="mb-2 text-dark">@cmt.NoiDung</p>
+
+                            <button class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#replyForm-@cmt.BinhLuanID">
+                                ↪ Trả lời
+                            </button>
+
+                            <div class="collapse mt-2" id="replyForm-@cmt.BinhLuanID">
+                                <form asp-action="AddComment" method="post" class="d-flex gap-2">
+                                    <input type="hidden" name="ReviewID" value="@Model.ReviewID" />
+                                    <input type="hidden" name="ParentID" value="@cmt.BinhLuanID" />
+                                    <input type="text" name="NoiDung" class="form-control form-control-sm" placeholder="Viết phản hồi..." required />
+                                    <button type="submit" class="btn btn-sm btn-primary fw-bold">Gửi</button>
+                                </form>
+                            </div>
+
+                            @{
+                                var cacReply = danhSachBinhLuan.Where(b => b.ParentID == cmt.BinhLuanID).OrderBy(b => b.NgayDang).ToList();
+                            }
+                            @if (cacReply.Any())
+                            {
+                                <div class="mt-3 ps-4 border-start border-2 border-secondary">
+                                    @foreach (var reply in cacReply)
+                                    {
+                                        <div class="mb-2 p-2 bg-white rounded shadow-sm">
+                                            <div class="d-flex w-100 justify-content-between mb-1">
+                                                <strong class="text-dark small">@reply.NguoiDung?.HoTen</strong>
+                                                <small class="text-muted" style="font-size: 0.75rem;">@reply.NgayDang.ToString("dd/MM/yyyy HH:mm")</small>
+                                            </div>
+                                            <p class="mb-0 text-dark small">@reply.NoiDung</p>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <span class="fs-1 d-block mb-2">✍️</span>
+                        Chưa có bình luận nào. Hãy là người đầu tiên thảo luận!
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

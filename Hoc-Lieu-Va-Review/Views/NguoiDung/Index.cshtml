@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Hoc_Lieu_Va_Review.Models.NguoiDung>
+
+@{
+    ViewData["Title"] = "Quản lý Tài Khoản";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👥 Quản lý Người Dùng</h2>
+        <span class="badge bg-primary fs-6">Tổng số: @Model.Count() tài khoản</span>
+    </div>
+
+    <div class="row mb-3 mt-3">
+        <div class="col-md-6">
+            <form asp-action="Index" method="get" class="d-flex gap-2">
+                <input type="text" name="timKiem" class="form-control" placeholder="Nhập tên hoặc email người dùng..." value="@ViewBag.TuKhoa">
+                <button type="submit" class="btn btn-primary fw-bold">Tìm</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Xóa</a>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày đăng ký</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.HoTen</td>
+                            <td>@item.Email</td>
+                            <td>
+                                @if (item.VaiTro == "Admin")
+                                {
+                                    <span class="badge bg-danger">@item.VaiTro</span>
+                                }
+                                else if (item.VaiTro == "GiangVien")
+                                {
+
+                                    <span class="badge bg-warning text-dark">@item.VaiTro</span>
+                                }
+                                else
+                                {
+
+                                    <span class="badge bg-info text-dark">@item.VaiTro</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.TrangThai == "HoatDong" || item.TrangThai == "Hoạt động")
+                                {
+                                    <span class="badge bg-success">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Đã khóa</span>
+                                }
+                            </td>
+                            <td>@item.NgayDangKy.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.NguoiDungID">Cấp quyền / Khóa</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4 mb-5">
+        <ul class="pagination justify-content-center shadow-sm">
+
+            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link fw-bold text-primary" asp-action="Index"
+                   asp-route-page="@(ViewBag.CurrentPage - 1)"
+                   asp-route-timKiem="@ViewBag.TuKhoa">&laquo; Trước</a>
+            </li>
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                if (i == 1 || i == ViewBag.TotalPages || Math.Abs(i - ViewBag.CurrentPage) <= 1)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link fw-bold" asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-timKiem="@ViewBag.TuKhoa">@i</a>
+                    </li>
+                }
+                else if (i == 2 && ViewBag.CurrentPage > 3)
+                {
+                    <li class="page-item disabled"><span class="page-link text-muted fw-bold">...</span></li>
+                }
+                else if (i == ViewBag.TotalPages - 1 && ViewBag.CurrentPage < ViewBag.TotalPages - 2)
+                {
+                    <li class="page-item disabled"><span class="page-link text-muted fw-bold">...</span></li>
+                }
+            }
+
+            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link fw-bold text-primary" asp-action="Index"
+                   asp-route-page="@(ViewBag.CurrentPage + 1)"
+                   asp-route-timKiem="@ViewBag.TuKhoa">Sau &raquo;</a>
+            </li>
+
+        </ul>
+    </nav>
+}

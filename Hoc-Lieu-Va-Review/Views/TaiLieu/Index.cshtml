@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Hoc_Lieu_Va_Review.Models.TaiLieu>
+
+@{
+    ViewData["Title"] = "Quản lý Tài Liệu";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Kho Tài Liệu</h2>
+
+    <div class="card shadow-sm border-0 bg-light mb-4">
+        <div class="card-body">
+            <form asp-controller="TaiLieu" asp-action="Index" method="get">
+                <div class="row g-2 align-items-center">
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">🔍</span>
+                            <input type="text" name="timKiem" class="form-control" placeholder="Nhập tên tài liệu, đề thi, giáo trình..." value="@ViewBag.TuKhoa">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <select name="locHocPhan" class="form-select" asp-items="ViewBag.DanhSachHocPhan">
+                            <option value="">-- Tất cả các môn học --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Tìm</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Upload Tài Liệu</a>
+    </p>
+
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Tên Tài Liệu</th>
+                <th>Môn Học</th>
+                <th>Loại</th>
+                <th>Người Up</th>
+                <th>Dung lượng</th>
+                <th>Trạng thái</th>
+                <th class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@item.TenTaiLieu</td>
+                        <td class="text-success">@item.HocPhan?.TenHocPhan</td>
+                        <td><span class="badge bg-secondary">@item.LoaiTaiLieu</span></td>
+                        <td>@item.NguoiDung?.HoTen</td>
+                        <td>@item.KichThuoc MB</td>
+                        <td>
+                            @if (item.TrangThaiDuyet == "ChoDuyet")
+                            {
+                                <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                            }
+                            else if (item.TrangThaiDuyet == "HopLe")
+                            {
+
+                                <span class="badge bg-success">Hợp lệ</span>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-danger">Từ chối</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-info text-white" asp-action="Details" asp-route-id="@item.TaiLieuID">Xem & Bình luận</a>
+                            |
+                            <a class="btn btn-sm btn-success" asp-action="Download" asp-route-id="@item.TaiLieuID">Tải về (@item.LuotTai)</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">Chưa có tài liệu nào được upload.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="mt-4 mb-5">
+            <ul class="pagination justify-content-center shadow-sm">
+
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link fw-bold text-primary" asp-action="Index"
+                       asp-route-page="@(ViewBag.CurrentPage - 1)"
+                       asp-route-timKiem="@ViewBag.TuKhoa"
+                       asp-route-locHocPhan="@ViewBag.LocHocPhan">&laquo; Trước</a>
+                </li>
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    // Luôn in ra: Trang 1, Trang cuối, và các trang lân cận trang hiện tại
+                    if (i == 1 || i == ViewBag.TotalPages || Math.Abs(i - ViewBag.CurrentPage) <= 1)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link fw-bold" asp-action="Index"
+                               asp-route-page="@i"
+                               asp-route-timKiem="@ViewBag.TuKhoa"
+                               asp-route-locHocPhan="@ViewBag.LocHocPhan">@i</a>
+                        </li>
+                    }
+                    // In dấu ... ở nửa đầu nếu khoảng cách quá xa
+                    else if (i == 2 && ViewBag.CurrentPage > 3)
+                    {
+                        <li class="page-item disabled"><span class="page-link text-muted fw-bold">...</span></li>
+                    }
+                    // In dấu ... ở nửa sau nếu khoảng cách quá xa
+                    else if (i == ViewBag.TotalPages - 1 && ViewBag.CurrentPage < ViewBag.TotalPages - 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link text-muted fw-bold">...</span></li>
+                    }
+                }
+
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link fw-bold text-primary" asp-action="Index"
+                       asp-route-page="@(ViewBag.CurrentPage + 1)"
+                       asp-route-timKiem="@ViewBag.TuKhoa"
+                       asp-route-locHocPhan="@ViewBag.LocHocPhan">Sau &raquo;</a>
+                </li>
+
+            </ul>
+        </nav>
+    }
+</div>

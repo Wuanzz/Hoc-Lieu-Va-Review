@@ -1,4 +1,5 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using Hoc_Lieu_Va_Review.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,15 +7,38 @@ namespace Hoc_Lieu_Va_Review.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        // Tiêm DbContext vào để kết nối Database
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // Lấy 6 Tài liệu mới nhất (CHỈ LẤY TÀI LIỆU HỢP LỆ)
+            var taiLieuMoi = await _context.TaiLieus
+                .Include(t => t.HocPhan)
+                .Include(t => t.NguoiDung)
+                .Where(t => t.TrangThaiDuyet == "HopLe")
+                .OrderByDescending(t => t.NgayUpload)
+                .Take(6)
+                .ToListAsync();
+
+            // Lấy 4 Review mới nhất và Chỉ lấy bài Hợp Lệ / Đã Duyệt
+            var reviewMoi = await _context.Reviews
+                .Include(r => r.HocPhan)
+                .Include(r => r.NguoiDung)
+                .Where(r => r.TrangThaiDuyet == "HopLe" || r.TrangThaiDuyet == "DaDuyet")
+                .OrderByDescending(r => r.NgayDang)
+                .Take(4) 
+                .ToListAsync();
+
+            // Gửi sang View
+            ViewBag.TaiLieuMoi = taiLieuMoi;
+            ViewBag.ReviewMoi = reviewMoi;
+
             return View();
         }
 
