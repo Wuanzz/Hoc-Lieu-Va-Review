@@ -4,69 +4,87 @@
     ViewData["Title"] = "Upload Tài Liệu";
 }
 
-<div class="container mt-4">
-    <h2>Upload Tài Liệu Mới</h2>
-    <hr />
-    <div class="row">
-         <div class="col-md-7">
-            <form asp-action="Create" enctype="multipart/form-data">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="card bg-light border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <h6 class="fw-bold text-primary mb-3">Chọn môn học cho tài liệu này</h6>
-                        <div class="row g-3">
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold text-muted">1. Khoa</label>
-                                <select id="KhoaID" class="form-select" asp-items="ViewBag.DanhSachKhoa">
-                                    <option value="">-- Chọn Khoa</option>
-                                </select>
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary"><i class="fa-solid fa-cloud-arrow-up text-primary me-2"></i>Upload Tài Liệu Mới</h2>
+                <p class="text-muted">Đóng góp tài liệu của bạn để xây dựng cộng đồng học tập vững mạnh</p>
+            </div>
+
+            <div class="card shadow border-0 rounded-4 p-4 p-md-5 bg-white">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 bg-danger bg-opacity-10 text-danger border-0"></div>
+
+                    <div class="card bg-primary bg-opacity-10 border-0 rounded-4 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>Chọn môn học phân loại</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">1. Khoa</label>
+                                    <select id="KhoaID" class="form-select border-0 shadow-sm text-dark rounded-3" asp-items="ViewBag.DanhSachKhoa">
+                                        <option value="" class="text-muted">-- Chọn Khoa --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">2. Ngành</label>
+                                    <select id="NganhID" class="form-select border-0 shadow-sm text-dark rounded-3" disabled>
+                                        <option value="" class="text-muted">-- Đợi chọn Khoa --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">3. Học Phần <span class="text-danger">*</span></label>
+                                    <select name="HocPhanID" id="HocPhanID" class="form-select border-2 border-primary shadow-sm text-dark rounded-3" required disabled>
+                                        <option value="" class="text-muted">-- Đợi chọn Ngành --</option>
+                                    </select>
+                                </div>
                             </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold text-muted">2. Ngành</label>
-                                <select id="NganhID" class="form-select" disabled>
-                                    <option value="">-- Vui lòng chọn Khoa</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold text-muted">3. Học Phần <span class="text-danger">*</span></label>
-                                <select name="HocPhanID" id="HocPhanID" class="form-select border-primary" required disabled>
-                                    <option value="">-- Vui lòng chọn Ngành</option>
-                                </select>
-                            </div>
-
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="TenTaiLieu" class="control-label fw-bold">Tên Tài Liệu <span class="text-danger">*</span></label>
-                    <input asp-for="TenTaiLieu" class="form-control" placeholder="Ví dụ: Đề thi giữa kỳ 2023..." />
-                    <span asp-validation-for="TenTaiLieu" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="TenTaiLieu" class="form-label fw-bold text-dark">Tên Tài Liệu <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-file-signature position-absolute text-muted" style="top: 50%; left: 18px; transform: translateY(-50%); z-index: 10;"></i>
+                            <input asp-for="TenTaiLieu" class="form-control form-control-lg bg-light border-0 shadow-sm rounded-3 text-dark" style="padding-left: 3rem !important;" placeholder="Ví dụ: Đề thi cuối kỳ Lập trình Web 2023..." />
+                        </div>
+                        <span asp-validation-for="TenTaiLieu" class="text-danger small fw-semibold mt-1 d-block"></span>
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="LoaiTaiLieu" class="control-label fw-bold">Loại Tài Liệu <span class="text-danger">*</span></label>
-                    <select asp-for="LoaiTaiLieu" class="form-select">
-                        <option value="Slide">Slide bài giảng</option>
-                        <option value="DeThi">Đề thi / Bài tập</option>
-                        <option value="ThamKhao">Tài liệu tham khảo</option>
-                    </select>
-                </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="LoaiTaiLieu" class="form-label fw-bold text-dark">Loại Tài Liệu <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-tags position-absolute text-muted" style="top: 50%; left: 18px; transform: translateY(-50%); z-index: 10;"></i>
+                            <select asp-for="LoaiTaiLieu" class="form-select form-select-lg bg-light border-0 shadow-sm rounded-3 text-dark" style="padding-left: 3rem !important;">
+                                <option value="Slide">Slide bài giảng</option>
+                                <option value="DeThi">Đề thi / Bài tập</option>
+                                <option value="ThamKhao">Tài liệu tham khảo</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="form-group mb-4">
-                    <label class="control-label fw-bold">Chọn File đính kèm <span class="text-danger">*</span></label>
-                    <input type="file" name="fileUpload" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar" required />
-                    <small class="text-muted">Định dạng hỗ trợ: PDF, Word, PowerPoint, ZIP.</small>
-                </div>
+                    <div class="form-group mb-5">
+                        <label class="form-label fw-bold text-dark">Chọn File đính kèm <span class="text-danger">*</span></label>
+                        <input type="file" name="fileUpload" class="form-control form-control-lg bg-light border-primary border-2 shadow-sm rounded-3 text-dark" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar" required />
+                        <div class="mt-2 text-muted small fw-semibold">
+                            <i class="fa-solid fa-circle-info text-primary me-1"></i>Định dạng hỗ trợ: PDF, Word, PowerPoint, ZIP, RAR.
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Bắt đầu Upload</button>
-                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
-                </div>
-            </form>
+                    <hr class="text-muted mb-4" />
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a class="btn btn-outline-secondary fw-bold rounded-pill px-4 shadow-sm" asp-action="Index">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Hủy bỏ
+                        </a>
+                        <button type="submit" class="btn btn-primary text-white fw-bold border-0 rounded-pill px-5 shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-up text-white me-2"></i>Bắt đầu Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>
@@ -78,16 +96,12 @@
 
     <script>
         $(document).ready(function () {
-
-            // 1. Khi chọn Khoa -> Lấy danh sách Ngành
             $('#KhoaID').change(function () {
                 var khoaId = $(this).val();
-
-                $('#NganhID').empty().append('<option value="">-- Chọn Ngành --</option>').prop('disabled', true);
-                $('#HocPhanID').empty().append('<option value="">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
+                $('#NganhID').empty().append('<option value="" class="text-muted">-- Chọn Ngành --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="" class="text-muted">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
 
                 if (khoaId) {
-                    // Gọi về TaiLieuController
                     $.get('/TaiLieu/GetNganhByKhoa', { khoaId: khoaId }, function (data) {
                         $.each(data, function (i, item) {
                             $('#NganhID').append('<option value="' + item.value + '">' + item.text + '</option>');
@@ -97,14 +111,11 @@
                 }
             });
 
-            // 2. Khi chọn Ngành -> Lấy danh sách Học Phần
             $('#NganhID').change(function () {
                 var nganhId = $(this).val();
-
-                $('#HocPhanID').empty().append('<option value="">-- Chọn Học Phần --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="" class="text-muted">-- Chọn Học Phần --</option>').prop('disabled', true);
 
                 if (nganhId) {
-                    // Gọi về TaiLieuController
                     $.get('/TaiLieu/GetHocPhanByNganh', { nganhId: nganhId }, function (data) {
                         $.each(data, function (i, item) {
                             $('#HocPhanID').append('<option value="' + item.value + '">' + item.text + '</option>');
@@ -113,7 +124,6 @@
                     });
                 }
             });
-
         });
     </script>
 }
