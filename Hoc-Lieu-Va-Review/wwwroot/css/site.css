@@ -20,3 +20,45 @@ html {
 body {
   margin-bottom: 0px;
 }
+
+.card {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.04) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.btn {
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.form-control, .form-select {
+    border-radius: 10px !important;
+    padding: 0.6rem 1.2rem !important;
+    border: 1.5px solid #e0e4e8 !important;
+    background-color: #f8fbfc !important;
+    transition: all 0.2s ease !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+}
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+}
