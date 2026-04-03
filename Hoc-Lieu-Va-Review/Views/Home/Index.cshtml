@@ -29,20 +29,28 @@
         <div class="row row-cols-1 row-cols-md-2 g-3">
             @if (taiLieuMoi != null && taiLieuMoi.Any())
             {
-                foreach (var item in taiLieuMoi)
+                @foreach (var item in ViewBag.TaiLieuMoi)
                 {
-                    <div class="col">
-                        <div class="card h-100 shadow-sm border-0 border-start border-success border-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card shadow-sm h-100 border-0 position-relative border-bottom border-info border-4" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                             <div class="card-body">
-                                <h5 class="card-title text-truncate fw-bold" title="@item.TenTaiLieu">@item.TenTaiLieu</h5>
-                                <h6 class="card-subtitle mb-2 text-muted small">Môn: @item.HocPhan?.TenHocPhan</h6>
-                                <div class="mt-3 text-dark small bg-light p-2 rounded">
-                                    <span>Đăng bởi: <strong>@item.NguoiDung?.HoTen</strong></span> <br />
-                                    <span class="text-muted">@item.NgayUpload.ToString("dd/MM/yyyy") | 💾 @item.KichThuoc MB</span>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge bg-secondary">@item.LoaiTaiLieu</span>
+                                    <small class="text-muted">@item.NgayUpload.ToString("dd/MM/yyyy")</small>
                                 </div>
+
+                                <h5 class="card-title fw-bold mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    <a asp-controller="TaiLieu" asp-action="Details" asp-route-id="@item.TaiLieuID" class="text-decoration-none text-primary stretched-link hover-primary">
+                                        @item.TenTaiLieu
+                                    </a>
+                                </h5>
+
+                                <p class="card-text text-success small fw-bold mb-1">📚 @item.HocPhan?.TenHocPhan</p>
                             </div>
-                            <div class="card-footer bg-white border-0 pt-0">
-                                <a class="btn btn-sm btn-outline-success w-100 fw-bold" asp-controller="TaiLieu" asp-action="Details" asp-route-id="@item.TaiLieuID">Xem chi tiết</a>
+
+                            <div class="card-footer bg-white border-0 pt-0 d-flex justify-content-between align-items-center">
+                                <small class="text-muted fw-semibold">👤 @item.NguoiDung?.HoTen</small>
+                                <small class="text-info fw-bold">⬇️ @item.LuotTai tải</small>
                             </div>
                         </div>
                     </div>
