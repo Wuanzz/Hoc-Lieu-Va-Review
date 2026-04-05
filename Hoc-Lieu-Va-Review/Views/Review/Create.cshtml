@@ -1,70 +1,84 @@
-﻿
-@model Hoc_Lieu_Va_Review.Models.Review
+﻿@model Hoc_Lieu_Va_Review.Models.Review
 
 @{
     ViewData["Title"] = "Viết Review Học Phần";
 }
 
-<div class="container mt-4">
-    <h2>Viết Đánh Giá (Review) Môn Học</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-7">
-            <form asp-action="Create">
-                <div asp-validation-summary="All" class="text-danger"></div>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-                <div class="card bg-light border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <h6 class="fw-bold text-primary mb-3"> Chọn môn học cần đánh giá</h6>
-                        <div class="row g-3">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary"><i class="fa-solid fa-pen-nib text-primary me-2"></i>Viết Đánh Giá Môn Học</h2>
+                <p class="text-muted">Chia sẻ kinh nghiệm và trải nghiệm của bạn để giúp đỡ các hậu bối nhé!</p>
+            </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold text-muted">1. Khoa</label>
-                                <select id="KhoaID" class="form-select" asp-items="ViewBag.DanhSachKhoa">
-                                    <option value="">-- Chọn Khoa</option>
-                                </select>
+            <div class="card shadow border-0 rounded-4 p-4 p-md-5 bg-white">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 bg-danger bg-opacity-10 text-danger border-0"></div>
+
+                    <div class="card bg-primary bg-opacity-10 border-0 rounded-4 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i>Chọn môn học cần đánh giá</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">1. Khoa</label>
+                                    <select id="KhoaID" class="form-select border-0 shadow-sm text-dark rounded-3" asp-items="ViewBag.DanhSachKhoa">
+                                        <option value="" class="text-muted">-- Chọn Khoa --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">2. Ngành</label>
+                                    <select id="NganhID" class="form-select border-0 shadow-sm text-dark rounded-3" disabled>
+                                        <option value="" class="text-muted">-- Đợi chọn Khoa --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">3. Học Phần <span class="text-danger">*</span></label>
+                                    <select name="HocPhanID" id="HocPhanID" class="form-select border-2 border-primary shadow-sm text-dark rounded-3" required disabled>
+                                        <option value="" class="text-muted">-- Đợi chọn Ngành --</option>
+                                    </select>
+                                </div>
                             </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold text-muted">2. Ngành</label>
-                                <select id="NganhID" class="form-select" disabled>
-                                    <option value="">-- Vui lòng chọn Khoa</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold text-muted">3. Học Phần <span class="text-danger">*</span></label>
-                                <select name="HocPhanID" id="HocPhanID" class="form-select border-primary" required disabled>
-                                    <option value="">-- Vui lòng chọn Ngành</option>
-                                </select>
-                            </div>
-
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="SoSao" class="control-label fw-bold">Chấm điểm (1-5 sao) <span class="text-danger">*</span></label>
-                    <select asp-for="SoSao" class="form-select w-50">
-                        <option value="5">⭐⭐⭐⭐⭐ (5 Sao - Xuất sắc)</option>
-                        <option value="4">⭐⭐⭐⭐ (4 Sao - Tốt)</option>
-                        <option value="3">⭐⭐⭐ (3 Sao - Khá)</option>
-                        <option value="2">⭐⭐ (2 Sao - Trung bình)</option>
-                        <option value="1">⭐ (1 Sao - Cần cải thiện)</option>
-                    </select>
-                </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="SoSao" class="form-label fw-bold text-dark">Chấm điểm <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-star position-absolute text-warning" style="top: 50%; left: 18px; transform: translateY(-50%); z-index: 10;"></i>
+                            <select asp-for="SoSao" class="form-select form-select-lg bg-light border-0 shadow-sm rounded-3 text-dark" style="padding-left: 3rem !important;">
+                                <option value="5">⭐⭐⭐⭐⭐ (5 Sao - Xuất sắc)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 Sao - Tốt)</option>
+                                <option value="3">⭐⭐⭐ (3 Sao - Khá)</option>
+                                <option value="2">⭐⭐ (2 Sao - Trung bình)</option>
+                                <option value="1">⭐ (1 Sao - Cần cải thiện)</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="NoiDung" class="control-label fw-bold">Nội dung Review <span class="text-danger">*</span></label>
-                    <textarea asp-for="NoiDung" class="form-control" rows="5" placeholder="Chia sẻ kinh nghiệm học tập, thầy cô, cách thi cử của môn này nhé..."></textarea>
-                    <span asp-validation-for="NoiDung" class="text-danger"></span>
-                </div>
+                    <div class="form-group mb-5">
+                        <label asp-for="NoiDung" class="form-label fw-bold text-dark">Nội dung Review <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-comment-dots position-absolute text-muted" style="top: 16px; left: 18px; z-index: 10;"></i>
+                            <textarea asp-for="NoiDung" class="form-control bg-light border-0 shadow-sm rounded-4 text-dark" rows="6" style="padding-left: 3rem !important; padding-top: 12px;" placeholder="Chia sẻ kinh nghiệm học tập, thầy cô, cách thi cử của môn này nhé..."></textarea>
+                        </div>
+                        <span asp-validation-for="NoiDung" class="text-danger small fw-semibold mt-1 d-block"></span>
+                    </div>
 
-                <div class="form-group mt-4">
-                    <button type="submit" class="btn btn-warning fw-bold text-dark">Đăng Review</button>
-                    <a class="btn btn-secondary ms-2" asp-action="Index">Quay lại danh sách</a>
-                </div>
-            </form>
+                    <hr class="text-muted mb-4 opacity-25" />
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a class="btn btn-outline-secondary fw-bold rounded-pill px-4 shadow-sm" asp-action="Index">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary text-white fw-bold border-0 rounded-pill px-5 shadow-sm">
+                            <i class="fa-solid fa-paper-plane text-white me-2"></i>Đăng Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>
@@ -76,22 +90,19 @@
 
     <script>
         $(document).ready(function () {
-
             // KHI NGƯỜI DÙNG THAY ĐỔI KHOA
             $('#KhoaID').change(function () {
                 var khoaId = $(this).val();
 
                 // Reset lại ô Ngành và Học Phần
-                $('#NganhID').empty().append('<option value="">-- Chọn Ngành --</option>').prop('disabled', true);
-                $('#HocPhanID').empty().append('<option value="">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
+                $('#NganhID').empty().append('<option value="" class="text-muted">-- Chọn Ngành --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="" class="text-muted">-- Vui lòng chọn Ngành trước --</option>').prop('disabled', true);
 
                 if (khoaId) {
-                    // Gọi AJAX lên hàm GetNganhByKhoa
                     $.get('/Review/GetNganhByKhoa', { khoaId: khoaId }, function (data) {
                         $.each(data, function (i, item) {
                             $('#NganhID').append('<option value="' + item.value + '">' + item.text + '</option>');
                         });
-                        // Mở khóa ô Ngành
                         $('#NganhID').prop('disabled', false);
                     });
                 }
@@ -102,20 +113,17 @@
                 var nganhId = $(this).val();
 
                 // Reset lại ô Học phần
-                $('#HocPhanID').empty().append('<option value="">-- Chọn Học Phần --</option>').prop('disabled', true);
+                $('#HocPhanID').empty().append('<option value="" class="text-muted">-- Chọn Học Phần --</option>').prop('disabled', true);
 
                 if (nganhId) {
-                    // Gọi AJAX lên hàm GetHocPhanByNganh
                     $.get('/Review/GetHocPhanByNganh', { nganhId: nganhId }, function (data) {
                         $.each(data, function (i, item) {
                             $('#HocPhanID').append('<option value="' + item.value + '">' + item.text + '</option>');
                         });
-                        // Mở khóa ô Học phần
                         $('#HocPhanID').prop('disabled', false);
                     });
                 }
             });
-
         });
     </script>
 }
