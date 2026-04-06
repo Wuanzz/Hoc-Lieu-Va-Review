@@ -19,11 +19,16 @@ namespace Hoc_Lieu_Va_Review.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            // Nếu người dùng đã đăng nhập rồi thì phân luồng về đúng vị trí
             if (User.Identity.IsAuthenticated)
             {
                 if (User.IsInRole("Admin"))
                 {
                     return RedirectToAction("Index", "Khoa", new { area = "Admin" });
+                }
+                else if (User.IsInRole("GiangVien"))
+                {
+                    return RedirectToAction("Index", "KiemDuyet", new { area = "Admin" });
                 }
                 return RedirectToAction("Index", "Home");
             }
@@ -35,37 +40,47 @@ namespace Hoc_Lieu_Va_Review.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Tìm người dùng trong database
                 var user = _context.NguoiDungs.FirstOrDefault(u =>
                     u.Email == model.Email &&
                     u.MatKhau == model.MatKhau &&
-                    u.TrangThai == "HoatDong"); 
+                    u.TrangThai == "HoatDong"); // Đảm bảo tài khoản chưa bị khóa
 
                 if (user != null)
                 {
                     var claims = new List<Claim>
                     {
+                        // Tạo danh sách các "chứng minh thư" (Claims) cho người dùng này
                         new Claim(ClaimTypes.Name, user.HoTen),
                         new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Role, user.VaiTro),
+                        new Claim(ClaimTypes.Role, user.VaiTro), // Phân quyền Admin/GiangVien/SinhVien
                         new Claim("UserId", user.NguoiDungID.ToString())
                     };
 
+                    // Khởi tạo Identity và Principal
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
+                    // Ghi Cookie đăng nhập vào trình duyệt
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
-                    // Nếu là Admin hoặc Giảng viên (tùy theo tên VaiTro trong DB của cậu)
-                    if (user.VaiTro == "Admin" || user.VaiTro == "GiangVien")
+                    // --- PHÂN LUỒNG ĐIỀU HƯỚNG THEO VAI TRÒ ---
+                    if (user.VaiTro == "Admin")
                     {
-                        // Chuyển hướng vào trang quản lý Khoa bên trong Area Admin
+                        // Admin vào thẳng trang Quản lý Khoa
                         return RedirectToAction("Index", "Khoa", new { area = "Admin" });
                     }
+                    else if (user.VaiTro == "GiangVien")
+                    {
+                        // Giảng viên vào thẳng khu vực Kiểm duyệt của họ
+                        return RedirectToAction("Index", "KiemDuyet", new { area = "Admin" });
+                    }
 
-                    // Nếu là Sinh viên thì về trang chủ bình thường
+                    // Nếu là Sinh viên thì về trang chủ public bình thường
                     return RedirectToAction("Index", "Home");
                 }
 
+                // Nếu không tìm thấy hoặc sai mật khẩu
                 ModelState.AddModelError(string.Empty, "Email hoặc mật khẩu không chính xác, hoặc tài khoản đã bị khóa.");
             }
 

@@ -123,6 +123,14 @@
             border: none !important;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.04) !important;
         }
+
+        /* Hiệu ứng làm mờ và cấm click cho Menu không có quyền */
+        .menu-disabled {
+            opacity: 0.4;
+            pointer-events: none; /* Cấm mọi thao tác click/hover chuột */
+            cursor: not-allowed !important;
+            filter: grayscale(100%);
+        }
     </style>
 </head>
 <body>
@@ -137,20 +145,36 @@
         </div>
 
         <ul class="list-unstyled components">
+            @{
+                // Khai báo biến kiểm tra quyền
+                var isAdmin = User.IsInRole("Admin");
+                var isGiangVien = User.IsInRole("GiangVien");
+            }
+
             <li>
-                <a asp-area="Admin" asp-controller="Khoa" asp-action="Index"><i class="fa-solid fa-building"></i> Quản lý Khoa</a>
+                <a asp-area="Admin" asp-controller="Khoa" asp-action="Index" class="@(!isAdmin ? "menu-disabled" : "")">
+                    <i class="fa-solid fa-building"></i> Quản lý Khoa
+                </a>
             </li>
             <li>
-                <a asp-area="Admin" asp-controller="Nganh" asp-action="Index"><i class="fa-solid fa-layer-group"></i> Quản lý Ngành</a>
+                <a asp-area="Admin" asp-controller="Nganh" asp-action="Index" class="@(!isAdmin ? "menu-disabled" : "")">
+                    <i class="fa-solid fa-layer-group"></i> Quản lý Ngành
+                </a>
             </li>
             <li>
-                <a asp-area="Admin" asp-controller="HocPhan" asp-action="Index"><i class="fa-solid fa-book"></i> Quản lý Học phần</a>
+                <a asp-area="Admin" asp-controller="HocPhan" asp-action="Index" class="@(!isAdmin ? "menu-disabled" : "")">
+                    <i class="fa-solid fa-book"></i> Quản lý Học phần
+                </a>
             </li>
             <li>
-                <a asp-area="Admin" asp-controller="KiemDuyet" asp-action="Index"><i class="fa-solid fa-folder-open"></i> Khu vực kiểm duyệt</a>
+                <a asp-area="Admin" asp-controller="NguoiDung" asp-action="Index" class="@(!isAdmin ? "menu-disabled" : "")">
+                    <i class="fa-solid fa-users"></i> Quản lý Người dùng
+                </a>
             </li>
             <li>
-                <a asp-area="Admin" asp-controller="NguoiDung" asp-action="Index"><i class="fa-solid fa-users"></i> Quản lý Người dùng</a>
+                <a asp-area="Admin" asp-controller="KiemDuyet" asp-action="Index" class="@(!isGiangVien ? "menu-disabled" : "")">
+                    <i class="fa-solid fa-folder-open"></i> Khu vực kiểm duyệt
+                </a>
             </li>
         </ul>
 
@@ -167,9 +191,16 @@
                 <h5 class="mb-0 fw-bold text-dark"><i id="sidebarCollapse" class="fa-solid fa-bars text-primary me-3" style="cursor:pointer; transition: 0.3s;"></i>Dashboard</h5>
             </div>
             <div class="d-flex align-items-center">
-                <span class="me-3 fw-bold text-dark small">Xin chào, <strong>Quản trị viên</strong>!</span>
+                <span class="me-3 fw-bold text-dark small">Xin chào, <strong>@User.Identity.Name</strong>!</span>
                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                    <i class="fa-solid fa-user-shield"></i>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <i class="fa-solid fa-user-shield"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    }
                 </div>
             </div>
         </nav>

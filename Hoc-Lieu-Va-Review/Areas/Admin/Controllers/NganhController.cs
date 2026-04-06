@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Hoc_Lieu_Va_Review.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize] // Phải đăng nhập
+    [Authorize(Roles = "Admin")] // Phải đăng nhập
     public class NganhController : Controller
     {
         private readonly ApplicationDbContext _context;

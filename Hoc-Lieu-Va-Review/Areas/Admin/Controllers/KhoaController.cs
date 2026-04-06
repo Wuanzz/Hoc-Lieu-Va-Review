@@ -7,7 +7,7 @@ namespace Hoc_Lieu_Va_Review.Areas.Admin.Controllers
 {
     [Area("Admin")]
     // Yêu cầu phải đăng nhập mới được vào trang này
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class KhoaController : Controller
     {
         private readonly ApplicationDbContext _context;

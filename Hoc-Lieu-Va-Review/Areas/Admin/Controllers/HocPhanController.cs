@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Hoc_Lieu_Va_Review.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class HocPhanController : Controller
     {
         private readonly ApplicationDbContext _context;
