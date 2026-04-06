@@ -44,6 +44,12 @@ app.UseRouting();
 app.UseAuthentication(); // Thêm middleware xác thực
 app.UseAuthorization();
 
+// Định tuyến cho khu vực admin
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+// Định tuyến cho khu vực sinh viên
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

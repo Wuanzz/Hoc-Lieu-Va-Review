@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Hoc_Lieu_Va_Review.Models;
 
-namespace Hoc_Lieu_Va_Review.Controllers
+namespace Hoc_Lieu_Va_Review.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize]
     public class KiemDuyetController : Controller
     {

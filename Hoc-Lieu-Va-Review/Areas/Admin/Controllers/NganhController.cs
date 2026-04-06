@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hoc_Lieu_Va_Review.Models;
 using Microsoft.AspNetCore.Authorization;
-namespace Hoc_Lieu_Va_Review.Controllers
+namespace Hoc_Lieu_Va_Review.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize] // Phải đăng nhập
     public class NganhController : Controller
     {

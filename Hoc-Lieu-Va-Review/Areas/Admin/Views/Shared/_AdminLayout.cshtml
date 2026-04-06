@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/zephyr/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ----- THANH SIDEBAR BÊN TRÁI ----- */
+        #sidebar {
+            min-width: 270px;
+            max-width: 270px;
+            background: #1e2b3c; /* Màu xanh đen cực kỳ chuyên nghiệp */
+            color: #fff;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 25px 20px;
+            background: #15202b; /* Màu đậm hơn cho khu vực logo */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        #sidebar ul.components {
+            padding: 20px 0;
+            flex-grow: 1;
+        }
+
+        #sidebar ul li a {
+            padding: 14px 25px;
+            font-size: 1.05em;
+            font-weight: 500;
+            display: block;
+            color: #aebccc;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Hiệu ứng khi hover hoặc đang ở trang hiện tại */
+        #sidebar ul li a:hover, #sidebar ul li.active > a {
+            color: #ffffff;
+            background: #0d6efd; /* Xanh primary sáng lên */
+            border-left: 5px solid #ffffff;
+        }
+
+        #sidebar ul li a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        /* ----- KHU VỰC NỘI DUNG CHÍNH (BÊN PHẢI) ----- */
+        #content {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Thanh Top Navigation mỏng bên trên */
+        .top-navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Vùng chứa dữ liệu */
+        .main-body {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        /* Style chung cho Card trên Dashboard */
+        .card {
+            border-radius: 16px !important;
+            border: none !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.04) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="sidebar">
+        <div class="sidebar-header d-flex align-items-center">
+            <i class="fa-solid fa-shield-halved fs-2 text-primary me-3"></i>
+            <div>
+                <h5 class="mb-0 fw-bold text-white">Admin Panel</h5>
+                <small class="text-muted" style="font-size: 0.75rem;">Hệ thống Quản trị</small>
+            </div>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li>
+                <a asp-area="Admin" asp-controller="Khoa" asp-action="Index"><i class="fa-solid fa-building"></i> Quản lý Khoa</a>
+            </li>
+            <li>
+                <a asp-area="Admin" asp-controller="Nganh" asp-action="Index"><i class="fa-solid fa-layer-group"></i> Quản lý Ngành</a>
+            </li>
+            <li>
+                <a asp-area="Admin" asp-controller="HocPhan" asp-action="Index"><i class="fa-solid fa-book"></i> Quản lý Học phần</a>
+            </li>
+            <li>
+                <a asp-area="Admin" asp-controller="TaiLieu" asp-action="Index"><i class="fa-solid fa-folder-open"></i> Duyệt Tài liệu</a>
+            </li>
+            <li>
+                <a asp-area="Admin" asp-controller="NguoiDung" asp-action="Index"><i class="fa-solid fa-users"></i> Quản lý Người dùng</a>
+            </li>
+        </ul>
+
+        <div class="p-4 border-top border-secondary border-opacity-25 mt-auto">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-outline-light w-100 rounded-pill fw-bold">
+                <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Về trang Sinh viên
+            </a>
+        </div>
+    </nav>
+
+    <div id="content">
+        <nav class="top-navbar">
+            <div>
+                <h5 class="mb-0 fw-bold text-dark"><i class="fa-solid fa-bars text-muted me-3" style="cursor:pointer;"></i>Dashboard</h5>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="me-3 fw-bold text-dark small">Xin chào, <strong>Quản trị viên</strong>!</span>
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+            </div>
+        </nav>
+
+        <div class="main-body">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

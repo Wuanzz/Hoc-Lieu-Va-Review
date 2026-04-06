@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hoc_Lieu_Va_Review.Controllers
+namespace Hoc_Lieu_Va_Review.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize]
     public class HocPhanController : Controller
     {
