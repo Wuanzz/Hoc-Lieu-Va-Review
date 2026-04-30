@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-// Bổ sung thư viện Services để gọi AI
-using Hoc_Lieu_Va_Review.Models;
+﻿using Hoc_Lieu_Va_Review.Models;
 using Hoc_Lieu_Va_Review.Services;
+using Hoc_Lieu_Va_Review.Hubs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -12,22 +13,23 @@ namespace Hoc_Lieu_Va_Review.Controllers
     public class ReviewController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly GeminiService _geminiService; // 1. Khai báo trợ lý AI
+        private readonly GeminiService _geminiService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        // 2. Tiêm AI vào Controller
-        public ReviewController(ApplicationDbContext context, GeminiService geminiService)
+        public ReviewController(ApplicationDbContext context, GeminiService geminiService, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _geminiService = geminiService;
+            _hubContext = hubContext;
         }
 
-        // 1. Hiển thị danh sách các bài Review
+        // Hiển thị danh sách các bài Review
         public async Task<IActionResult> Index()
         {
             var reviews = await _context.Reviews
                 .Include(r => r.HocPhan)
                 .Include(r => r.NguoiDung)
-                // 3. CHỈ LẤY CÁC BÀI REVIEW HỢP LỆ (Đã được AI hoặc Giảng viên duyệt)
+                // CHỈ LẤY CÁC BÀI REVIEW HỢP LỆ (Đã được AI hoặc Giảng viên duyệt)
                 .Where(r => r.TrangThaiDuyet == "HopLe" || r.TrangThaiDuyet == "DaDuyet")
                 .OrderByDescending(r => r.NgayDang)
                 .ToListAsync();
@@ -59,14 +61,14 @@ namespace Hoc_Lieu_Va_Review.Controllers
 
                 review.NgayDang = DateTime.Now;
 
-                // 4. MỜI TRỢ LÝ AI VÀO DUYỆT BÀI REVIEW
+                // MỜI TRỢ LÝ AI VÀO DUYỆT BÀI REVIEW
                 string ketQuaDuyet = await _geminiService.KiemDuyetVanBan(review.NoiDung);
                 review.TrangThaiDuyet = ketQuaDuyet;
 
                 _context.Add(review);
                 await _context.SaveChangesAsync();
 
-                // 5. Gửi thông báo bằng TempData để hiện popup xanh/đỏ bên ngoài giao diện
+                // Gửi thông báo bằng TempData để hiện popup xanh/đỏ bên ngoài giao diện
                 if (ketQuaDuyet == "TuChoi")
                 {
                     TempData["ThongBaoReview"] = "❌ Bài đánh giá chứa nội dung vi phạm và đã bị AI chặn!";
@@ -78,6 +80,12 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 else
                 {
                     TempData["ThongBaoReview"] = "✅ Đăng bài đánh giá thành công!";
+
+                    // ------ NÚT BẤM PHÁT THANH SIGNALR ĐÃ ĐƯỢC GẮN VÀO ĐÂY ------
+                    // Chỉ bắn thông báo khi bài đã được duyệt hợp lệ
+                    var hocPhan = await _context.HocPhans.FindAsync(review.HocPhanID);
+                    var tenMon = hocPhan != null ? hocPhan.TenHocPhan : "một môn học";
+                    await _hubContext.Clients.All.SendAsync("ReceiveNotification", $"⭐ Có một bài đánh giá mới cực chất về môn: {tenMon}!");
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -87,11 +95,10 @@ namespace Hoc_Lieu_Va_Review.Controllers
             return View(review);
         }
 
-        // Dropdown liên ho giữa Khoa -> Ngành -> Học Phần
+        // Dropdown liên hoàn giữa Khoa -> Ngành -> Học Phần
         [HttpGet]
         public IActionResult GetNganhByKhoa(int khoaId)
         {
-            // Lấy các ngành thuộc Khoa được chọn
             var nganhs = _context.Nganhs
                 .Where(n => n.KhoaID == khoaId)
                 .Select(n => new { value = n.NganhID, text = n.TenNganh })
@@ -102,7 +109,6 @@ namespace Hoc_Lieu_Va_Review.Controllers
         [HttpGet]
         public IActionResult GetHocPhanByNganh(int nganhId)
         {
-            // Lấy các học phần thuộc Ngành được chọn
             var hocPhans = _context.HocPhans
                 .Where(h => h.NganhID == nganhId)
                 .Select(h => new { value = h.HocPhanID, text = h.TenHocPhan })
@@ -115,7 +121,6 @@ namespace Hoc_Lieu_Va_Review.Controllers
         {
             if (id == null) return NotFound();
 
-            // Lấy bài Review cùng thông tin Môn học và Người viết
             var review = await _context.Reviews
                 .Include(r => r.HocPhan)
                 .Include(r => r.NguoiDung)
@@ -123,8 +128,6 @@ namespace Hoc_Lieu_Va_Review.Controllers
 
             if (review == null) return NotFound();
 
-            // Lấy danh sách bình luận CỦA BÀI REVIEW NÀY (Chỉ lấy bình luận hợp lệ)
-            // Lưu ý: Cột ReviewID trong bảng BinhLuan phải cho phép null (int?) nhé
             var danhSachBinhLuan = await _context.BinhLuans
                 .Include(b => b.NguoiDung)
                 .Where(b => b.ReviewID == id && (b.TrangThaiDuyet == "HopLe" || b.TrangThaiDuyet == "DaDuyet"))
@@ -139,7 +142,6 @@ namespace Hoc_Lieu_Va_Review.Controllers
         // HÀM XỬ LÝ GỬI BÌNH LUẬN (CÓ AI KIỂM DUYỆT)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // Bổ sung thêm tham số ParentID
         public async Task<IActionResult> AddComment(int ReviewID, string NoiDung, int? ParentID)
         {
             if (string.IsNullOrWhiteSpace(NoiDung)) return RedirectToAction(nameof(Details), new { id = ReviewID });
@@ -147,7 +149,6 @@ namespace Hoc_Lieu_Va_Review.Controllers
             var userIdClaim = User.FindFirst("UserId");
             if (userIdClaim != null)
             {
-                // Vẫn qua AI duyệt như bình thường
                 string ketQuaDuyet = await _geminiService.KiemDuyetVanBan(NoiDung);
 
                 var binhLuan = new BinhLuan
@@ -157,7 +158,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
                     NgayDang = DateTime.Now,
                     TrangThaiDuyet = ketQuaDuyet,
                     NguoiDungID = int.Parse(userIdClaim.Value),
-                    ParentID = ParentID // Gắn ID của bình luận cha vào đây
+                    ParentID = ParentID
                 };
 
                 _context.BinhLuans.Add(binhLuan);
