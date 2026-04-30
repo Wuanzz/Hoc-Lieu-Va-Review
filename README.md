@@ -59,7 +59,9 @@ git clone https://github.com/your-username/EduShare.git
 cd EduShare
 ```
 
-**Bước 2: Cấu hình Cơ sở dữ liệu & API Key** Mở file `appsettings.json` và cập nhật chuỗi kết nối SQL Server cũng như API Key của Gemini:
+**Bước 2: Tạo database** Mở SQL Server để tạo database tên `EduShareDB`
+
+**Bước 3: Cấu hình Cơ sở dữ liệu & API Key** Mở file `appsettings.json` và cập nhật chuỗi kết nối SQL Server cũng như API Key của Gemini:
 
 ```plaintext
 "ConnectionStrings": {
@@ -70,21 +72,33 @@ cd EduShare
 }
 ```
 
-**Bước 3: Khởi tạo Database (Migrations)** Mở **Package Manager Console** trong Visual Studio và chạy các lệnh sau:
+**Bước 4:&#x20;**&#x4D;ở **Package Manager Console** trong Visual Studio và chạy các lệnh sau:
 
 ```plaintext
 Add-Migration InitialCreate
 Update-Database
 ```
 
-**Bước 4: Chạy ứng dụng** Nhấn `F5` hoặc nút **Run** trong Visual Studio để khởi chạy dự án.
+**Bước 5: Thêm dữ liệu người dùng mẫu** Mở SQL Server tiến hành chạy script:
+
+```plaintext
+USE EduShareDB
+
+INSERT INTO NguoiDung (HoTen, Email, MatKhau, AnhDaiDien, NgayDangKy, TrangThai, VaiTro)
+VALUES 
+(N'Sinh viên', 'sinhvien@hcmue.edu.vn', '123456', NULL, GETDATE(), 'HoatDong', 'SinhVien'),
+(N'Giảng viên', 'giangvien@hcmue.edu.vn', '123456', NULL, GETDATE(), 'HoatDong', 'GiangVien'),
+(N'Quản trị viên', 'admin@hcmue.edu.vn', '123456', NULL, GETDATE(), 'HoatDong', 'Admin');
+```
+
+**Bước 6: Chạy ứng dụng** Nhấn `F5` hoặc nút **Run** trong Visual Studio để khởi chạy dự án.
 
 ---
 
 ## 👥 Tài khoản Test mặc định (Gợi ý)
 
-Sau khi chạy Update-Database và Seed data (nếu có), bạn có thể đăng nhập bằng các tài khoản sau:
+Sau khi đã cài đặt môi trường xong, bạn có thể đăng nhập bằng các tài khoản sau:
 
-* **Quản trị viên:** `admin@edushare.com` | Mật khẩu: `Admin@123`
-* **Giảng viên:** `giangvien@edushare.com` | Mật khẩu: `Gv@123`
-* **Sinh viên:** `sinhvien@edushare.com` | Mật khẩu: `Sv@123`
+* **Quản trị viên:** `admin@hcmue.edu.vn` | Mật khẩu: `123456`
+* **Giảng viên:** `giangvien@hcmue.edu.vn` | Mật khẩu: `123456`
+* **Sinh viên:** `sinhvien@hcmue.edu.vn` | Mật khẩu: `123456`
