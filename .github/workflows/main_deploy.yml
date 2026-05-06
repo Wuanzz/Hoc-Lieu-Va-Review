@@ -3,7 +3,7 @@ name: Build and deploy ASP.NET Core app to Azure
 on:
   push:
     branches:
-      - feature/ducanh
+      - deploy/ducanh
 
 jobs:
   build:
