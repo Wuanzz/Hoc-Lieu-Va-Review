@@ -96,8 +96,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 if (fileUpload != null && fileUpload.Length > 0)
                 {
                     // 1. Lấy chuỗi kết nối Storage từ cấu hình (Key Vault)
-                    string storageConnString = _configuration["Storage--ConnectionString"] ?? _configuration["Storage:ConnectionString"];
-
+                    string storageConnString = _configuration["Storage:ConnectionString"];
                     // 2. Kết nối tới Blob Container
                     BlobServiceClient blobServiceClient = new BlobServiceClient(storageConnString);
                     BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("tailieu-uploads");
