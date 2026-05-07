@@ -61,7 +61,7 @@
                 nganhSelect.empty();
                 if (khoaId) {
                     $.ajax({
-                        url: '/HocPhan/GetNganhByKhoa',
+                        url: '/Admin/HocPhan/GetNganhByKhoa',
                         type: 'GET',
                         data: { khoaId: khoaId },
                         success: function (data) {

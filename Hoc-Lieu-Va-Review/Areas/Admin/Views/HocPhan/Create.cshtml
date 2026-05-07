@@ -66,7 +66,7 @@
                 if (khoaId) {
                     // Nếu có chọn Khoa, gọi AJAX xuống server
                     $.ajax({
-                        url: 'Admin/HocPhan/GetNganhByKhoa',
+                        url: '/Admin/HocPhan/GetNganhByKhoa',
                         type: 'GET',
                         data: { khoaId: khoaId },
                         success: function (data) {
