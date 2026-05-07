@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims; // Cần cái này để lấy ID người dùng đăng nhập
+using Azure.Storage.Blobs;
 using Hoc_Lieu_Va_Review.Models;
 using Hoc_Lieu_Va_Review.Services;
+
 
 namespace Hoc_Lieu_Va_Review.Controllers
 {
@@ -12,14 +14,15 @@ namespace Hoc_Lieu_Va_Review.Controllers
     public class TaiLieuController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment; // Dùng để truy cập thư mục wwwroot
+        // private readonly IWebHostEnvironment _webHostEnvironment; // Dùng để truy cập thư mục wwwroot
         private readonly GeminiService _geminiService; // Dùng để gọi API Gemini
+        private readonly IConfiguration _configuration;
 
-        public TaiLieuController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, GeminiService geminiService)
+        public TaiLieuController(ApplicationDbContext context /*IWebHostEnvironment webHostEnvironment*/, GeminiService geminiService, IConfiguration configuration)
         {
             _context = context;
-            _webHostEnvironment = webHostEnvironment;
             _geminiService = geminiService;
+            _configuration = configuration;
         }
 
         // Hiển thị danh sách Tài Liệu (CÓ TÌM KIẾM VÀ BỘ LỌC)
@@ -92,29 +95,29 @@ namespace Hoc_Lieu_Va_Review.Controllers
                 // Kiểm tra xem người dùng có thực sự chọn file chưa
                 if (fileUpload != null && fileUpload.Length > 0)
                 {
-                    // Tạo thư mục "uploads" trong wwwroot nếu chưa tồn tại
-                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
+                    // 1. Lấy chuỗi kết nối Storage từ cấu hình (Key Vault)
+                    string storageConnString = _configuration["Storage--ConnectionString"] ?? _configuration["Storage:ConnectionString"];
 
-                    // Đổi tên file để tránh việc upload 2 file trùng tên bị ghi đè (dùng Guid)
+                    // 2. Kết nối tới Blob Container
+                    BlobServiceClient blobServiceClient = new BlobServiceClient(storageConnString);
+                    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("tailieu-uploads");
+
+                    // 3. Tạo tên file độc nhất để chống ghi đè
                     string fileExtension = Path.GetExtension(fileUpload.FileName);
                     string uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    BlobClient blobClient = containerClient.GetBlobClient(uniqueFileName);
 
-                    // Copy file vật lý vào thư mục uploads
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    // 4. Upload stream dữ liệu thẳng lên Azure Blob
+                    using (var stream = fileUpload.OpenReadStream())
                     {
-                        await fileUpload.CopyToAsync(fileStream);
+                        await blobClient.UploadAsync(stream, true);
                     }
 
-                    // Cập nhật nốt các thông tin còn thiếu vào Model trước khi lưu DB
-                    taiLieu.DuongDanFile = "/uploads/" + uniqueFileName;
+                    // 5. Cập nhật Model với đường dẫn tuyệt đối của Azure Blob
+                    taiLieu.DuongDanFile = blobClient.Uri.ToString();
                     taiLieu.KichThuoc = Math.Round((double)fileUpload.Length / (1024 * 1024), 2); // Đổi byte sang MB
 
-                    // Lấy ID của người đang đăng nhập (từ Claims lúc Login)
+                    // Lấy ID của người đang đăng nhập
                     var userIdClaim = User.FindFirst("UserId");
                     if (userIdClaim != null)
                     {
@@ -122,7 +125,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
                     }
 
                     taiLieu.NgayUpload = DateTime.Now;
-                    taiLieu.TrangThaiDuyet = "ChoDuyet"; // Sinh viên up lên thì cứ cho vào trạng thái chờ Admin duyệt
+                    taiLieu.TrangThaiDuyet = "ChoDuyet";
                     taiLieu.LuotTai = 0;
 
                     // Lưu vào Database
@@ -168,26 +171,13 @@ namespace Hoc_Lieu_Va_Review.Controllers
             var taiLieu = await _context.TaiLieus.FindAsync(id);
             if (taiLieu == null) return NotFound("Không tìm thấy thông tin tài liệu trong Database.");
 
-            // CÁCH MỚI: Tách lấy đúng cái tên file ở đuôi, rồi tự ghép nối lại cực kỳ an toàn
-            string fileName = Path.GetFileName(taiLieu.DuongDanFile);
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            // Tớ thêm cái filePath vào thông báo lỗi để nếu có sai, cậu sẽ nhìn thấy ngay nó đang tìm ở đâu
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound($"File vật lý không tồn tại. Máy chủ đang tìm tại: {filePath}");
-            }
-
+            // Tăng lượt tải lên 1
             taiLieu.LuotTai += 1;
             _context.Update(taiLieu);
             await _context.SaveChangesAsync();
 
-            byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            string extension = Path.GetExtension(filePath);
-            string downloadName = taiLieu.TenTaiLieu + extension;
-
-            return File(fileBytes, "application/octet-stream", downloadName);
+            // Chuyển hướng người dùng thẳng tới link của Azure Blob Storage để tải file
+            return Redirect(taiLieu.DuongDanFile);
         }
 
         // [GET] Hiển thị chi tiết tài liệu và danh sách bình luận
