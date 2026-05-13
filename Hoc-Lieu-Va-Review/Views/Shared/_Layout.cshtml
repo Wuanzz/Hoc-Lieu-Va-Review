@@ -37,9 +37,9 @@
                         </li>
                         @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("GiangVien")))
                         {
-                            // Tự động phân luồng: Admin thì link về Khoa, Giảng viên thì link về Kiểm duyệt
+                            // Tự động phân luồng: Admin thì link về Home, Giảng viên thì link về Kiểm duyệt
                             var urlQuanTri = User.IsInRole("Admin")
-                            ? Url.Action("Index", "Khoa", new { area = "Admin" })
+                            ? Url.Action("Index", "Home", new { area = "Admin" })
                             : Url.Action("Index", "KiemDuyet", new { area = "Admin" });
 
                             <a href="@urlQuanTri" class="btn btn-outline-primary fw-bold ms-2 rounded-pill shadow-sm">

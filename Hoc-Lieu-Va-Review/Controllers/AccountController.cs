@@ -24,7 +24,7 @@ namespace Hoc_Lieu_Va_Review.Controllers
             {
                 if (User.IsInRole("Admin"))
                 {
-                    return RedirectToAction("Index", "Khoa", new { area = "Admin" });
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
                 }
                 else if (User.IsInRole("GiangVien"))
                 {
@@ -67,8 +67,8 @@ namespace Hoc_Lieu_Va_Review.Controllers
                     // --- PHÂN LUỒNG ĐIỀU HƯỚNG THEO VAI TRÒ ---
                     if (user.VaiTro == "Admin")
                     {
-                        // Admin vào thẳng trang Quản lý Khoa
-                        return RedirectToAction("Index", "Khoa", new { area = "Admin" });
+                        // Admin vào thẳng trang Dashboard
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
                     }
                     else if (user.VaiTro == "GiangVien")
                     {
