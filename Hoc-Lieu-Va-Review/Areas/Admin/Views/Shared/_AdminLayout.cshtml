@@ -152,6 +152,11 @@
             }
 
             <li>
+                <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="@(!isAdmin ? "menu-disabled" : "")">
+                    <i class="fa-solid fa-home"></i> Dashboard
+                </a>
+            </li>
+            <li>
                 <a asp-area="Admin" asp-controller="Khoa" asp-action="Index" class="@(!isAdmin ? "menu-disabled" : "")">
                     <i class="fa-solid fa-building"></i> Quản lý Khoa
                 </a>
